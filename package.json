@@ -1,0 +1,16 @@
+{
+  "name": "khan-yotam-app",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Sea Trail live map PWA — Khan Yotam",
+  "scripts": {
+    "dev:client": "npm run dev --prefix client",
+    "dev:server": "npm run dev --prefix server",
+    "build:client": "npm run build --prefix client",
+    "start:server": "npm start --prefix server",
+    "seed": "npm run seed --prefix server"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

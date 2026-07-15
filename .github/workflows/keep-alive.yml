@@ -1,0 +1,24 @@
+# Keep-alive ping for Render free tier (sleeps after ~15 min idle).
+# Hits GET /health every 14 minutes. Delete this file when upgrading to always-on Render.
+name: Keep-alive Render API
+
+on:
+  schedule:
+    - cron: '*/14 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping /health
+        env:
+          RENDER_HEALTH_URL: ${{ secrets.RENDER_HEALTH_URL }}
+        run: |
+          if [ -z "$RENDER_HEALTH_URL" ]; then
+            echo "RENDER_HEALTH_URL secret is not set"
+            exit 1
+          fi
+          curl --fail --silent --show-error --max-time 30 "$RENDER_HEALTH_URL"
+          echo
+          echo "OK $(date -u +%Y-%m-%dT%H:%M:%SZ)"
