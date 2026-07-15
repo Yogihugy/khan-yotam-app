@@ -1,50 +1,52 @@
 import { useMemo, useState, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { completeProfile } from '../lib/api';
 import { PROFILE_COLORS, TRAVELER_TYPES, type TravelerType } from '../lib/constants';
-import { getAccessToken } from '../lib/supabase';
-import { hasCompletedOnboarding, readCachedUser, writeCachedUser } from '../lib/userStore';
+import { updateOwnProfile } from '../lib/mapData';
+import { writeCachedUser } from '../lib/userStore';
+import type { PublicUser } from '../lib/api';
 
-export function CompleteProfilePage() {
-  const navigate = useNavigate();
-  const cached = useMemo(() => readCachedUser(), []);
-  const [name, setName] = useState(cached?.name || '');
-  const [travelerType, setTravelerType] = useState<TravelerType>('hiker');
-  const [color, setColor] = useState<string>(PROFILE_COLORS[1]);
+type Props = {
+  user: PublicUser;
+  onUserChange: (user: PublicUser) => void;
+};
+
+export function ProfilePage({ user, onUserChange }: Props) {
+  const [name, setName] = useState(user.name || '');
+  const [travelerType, setTravelerType] = useState<TravelerType>(
+    (user.traveler_type as TravelerType) || 'hiker',
+  );
+  const [color, setColor] = useState(user.color || PROFILE_COLORS[1]);
   const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  const phone = useMemo(() => user.phone || '—', [user.phone]);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
+    setSaved(false);
     setSaving(true);
-
     try {
-      const accessToken = await getAccessToken();
-      if (!accessToken) {
-        throw new Error('אין סשן פעיל — פתחו שוב את קישור ההזמנה');
-      }
-
-      const result = await completeProfile(accessToken, {
+      const updated = await updateOwnProfile({
         name: name.trim(),
         traveler_type: travelerType,
         color,
       });
-
-      writeCachedUser(result.user);
-      navigate(hasCompletedOnboarding() ? '/' : '/onboarding', { replace: true });
+      writeCachedUser(updated);
+      onUserChange(updated);
+      setSaved(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'שגיאה בשמירת הפרופיל');
+      setError(err instanceof Error ? err.message : 'שגיאה בשמירה');
     } finally {
       setSaving(false);
     }
   }
 
   return (
-    <main className="page">
+    <main className="shell-page">
       <form className="panel" onSubmit={onSubmit}>
-        <h1>השלמת פרופיל</h1>
-        <p className="muted">שם התצוגה, סוג מטייל וצבע על המפה.</p>
+        <h1>פרופיל</h1>
+        <p className="muted">שם תצוגה, סוג מטייל וצבע על המפה.</p>
 
         <label>
           שם תצוגה
@@ -59,7 +61,7 @@ export function CompleteProfilePage() {
 
         <label>
           טלפון
-          <input value={cached?.phone || '—'} readOnly disabled />
+          <input value={phone} readOnly disabled />
         </label>
 
         <fieldset>
@@ -95,9 +97,10 @@ export function CompleteProfilePage() {
         </fieldset>
 
         {error && <p className="error">{error}</p>}
+        {saved && <p className="muted">נשמר.</p>}
 
         <button type="submit" className="primary" disabled={saving}>
-          {saving ? 'שומרים…' : 'שמירה והמשך'}
+          {saving ? 'שומרים…' : 'שמירה'}
         </button>
       </form>
     </main>

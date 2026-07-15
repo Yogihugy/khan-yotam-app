@@ -1,4 +1,5 @@
 import { appConfig } from './config';
+import { getAccessToken } from './supabase';
 import type { Session } from '@supabase/supabase-js';
 
 export type PublicUser = {
@@ -44,6 +45,29 @@ export function completeProfile(
   payload: { name: string; traveler_type: string; color: string },
 ) {
   return apiFetch<{ user: PublicUser }>('/auth/complete-profile', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${accessToken}` },
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function postDistress(payload: {
+  client_request_id: string;
+  lat: number | null;
+  lng: number | null;
+}) {
+  const accessToken = await getAccessToken();
+  if (!accessToken) {
+    throw new Error('אין סשן פעיל');
+  }
+
+  return apiFetch<{
+    ok: boolean;
+    id?: string;
+    whatsapp_sent?: boolean;
+    duplicate?: boolean;
+    mocked?: boolean;
+  }>('/api/distress', {
     method: 'POST',
     headers: { Authorization: `Bearer ${accessToken}` },
     body: JSON.stringify(payload),

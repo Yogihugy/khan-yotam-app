@@ -1,8 +1,9 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { assertClientEnv } from './lib/config';
+import { AuthenticatedApp } from './pages/AuthenticatedApp';
 import { CompleteProfilePage } from './pages/CompleteProfilePage';
-import { HomePage } from './pages/HomePage';
 import { InvitePage } from './pages/InvitePage';
+import { OnboardingPage } from './pages/OnboardingPage';
 
 assertClientEnv();
 
@@ -10,10 +11,10 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage />} />
         <Route path="/invite/:token" element={<InvitePage />} />
+        <Route path="/onboarding" element={<OnboardingPage />} />
         <Route path="/complete-profile" element={<CompleteProfilePage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/*" element={<AuthenticatedApp />} />
       </Routes>
     </BrowserRouter>
   );

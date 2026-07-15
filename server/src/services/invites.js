@@ -20,40 +20,73 @@ export async function createInvitedUser({
   const supabase = getSupabaseAdmin();
   const inviteToken = randomUUID();
   const inviteExpiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
-  const email = `u_${randomUUID().replace(/-/g, '')}@users.khanyotam.local`;
-  const password = randomUUID();
 
-  const { data: authUser, error: createError } = await supabase.auth.admin.createUser({
-    email,
-    password,
-    email_confirm: true,
-    user_metadata: { phone, name, role },
-  });
+  const { data: existing, error: existingError } = await supabase
+    .from('users')
+    .select('id')
+    .eq('phone', phone)
+    .eq('is_deleted', false)
+    .maybeSingle();
 
-  if (createError || !authUser?.user) {
-    throw Object.assign(new Error(createError?.message || 'Failed to create auth user'), {
-      status: 500,
-    });
+  if (existingError) {
+    throw Object.assign(new Error(existingError.message), { status: 500 });
   }
 
-  const userId = authUser.user.id;
-  const row = {
-    id: userId,
-    name,
-    phone,
-    role,
-    status: 'active',
-    color: '#3498DB',
-    expires_at: expiresAtForRole(role),
-    invite_token: inviteToken,
-    invite_expires_at: inviteExpiresAt,
-    is_deleted: false,
-  };
+  let userId;
 
-  const { error: insertError } = await supabase.from('users').insert(row);
-  if (insertError) {
-    await supabase.auth.admin.deleteUser(userId);
-    throw Object.assign(new Error(insertError.message), { status: 500 });
+  if (existing) {
+    userId = existing.id;
+    const { error: updateError } = await supabase
+      .from('users')
+      .update({
+        name,
+        role,
+        status: 'active',
+        expires_at: expiresAtForRole(role),
+        invite_token: inviteToken,
+        invite_expires_at: inviteExpiresAt,
+      })
+      .eq('id', userId);
+
+    if (updateError) {
+      throw Object.assign(new Error(updateError.message), { status: 500 });
+    }
+  } else {
+    const email = `u_${randomUUID().replace(/-/g, '')}@users.khanyotam.local`;
+    const password = randomUUID();
+
+    const { data: authUser, error: createError } = await supabase.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: { phone, name, role },
+    });
+
+    if (createError || !authUser?.user) {
+      throw Object.assign(new Error(createError?.message || 'Failed to create auth user'), {
+        status: 500,
+      });
+    }
+
+    userId = authUser.user.id;
+    const row = {
+      id: userId,
+      name,
+      phone,
+      role,
+      status: 'active',
+      color: '#3498DB',
+      expires_at: expiresAtForRole(role),
+      invite_token: inviteToken,
+      invite_expires_at: inviteExpiresAt,
+      is_deleted: false,
+    };
+
+    const { error: insertError } = await supabase.from('users').insert(row);
+    if (insertError) {
+      await supabase.auth.admin.deleteUser(userId);
+      throw Object.assign(new Error(insertError.message), { status: 500 });
+    }
   }
 
   const { appUrl } = getConfig();

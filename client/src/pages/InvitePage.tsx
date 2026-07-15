@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { verifyInvite } from '../lib/api';
 import { setSessionFromTokens } from '../lib/supabase';
+import { hasCompletedOnboarding, writeCachedUser } from '../lib/userStore';
 
 export function InvitePage() {
   const { token } = useParams<{ token: string }>();
@@ -20,11 +21,13 @@ export function InvitePage() {
       try {
         const result = await verifyInvite(token);
         await setSessionFromTokens(result.session);
-        sessionStorage.setItem('khan-yotam-user', JSON.stringify(result.user));
+        writeCachedUser(result.user);
 
         if (cancelled) return;
 
-        if (result.profile_complete) {
+        if (!hasCompletedOnboarding()) {
+          navigate('/onboarding', { replace: true });
+        } else if (result.profile_complete) {
           navigate('/', { replace: true });
         } else {
           navigate('/complete-profile', { replace: true });

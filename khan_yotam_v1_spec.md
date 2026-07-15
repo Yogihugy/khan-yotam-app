@@ -495,34 +495,35 @@ Enable replication for:
 - [ ] GitHub Actions keep-alive cron
 
 ### Phase B — Core map + location (Week 2)
-- [ ] Onboarding screen + location permission handling
-- [ ] Profile screen
-- [ ] Map with Leaflet + OpenStreetMap
-- [ ] Smart location updates (10m threshold / 2min heartbeat)
-- [ ] Live location upsert + location_history inserts
-- [ ] User icons on map with freshness policy (10/30 min thresholds)
-- [ ] Khan Yotam POI hardcoded at 32.6905, 34.9433
-- [ ] Quiet mode (status toggle)
-- [ ] Expired access screen
+- [x] Onboarding screen + location permission handling
+- [x] Profile screen
+- [x] Map with Leaflet + OpenStreetMap
+- [x] Smart location updates (10m threshold / 2min heartbeat)
+- [x] Live location upsert + location_history inserts
+- [x] User icons on map with freshness policy (10/30 min thresholds)
+- [x] Khan Yotam POI hardcoded at 32.6905, 34.9433
+- [x] Quiet mode (status toggle)
+- [x] Expired access screen
 
 ### Phase C — Communication + distress (Week 3)
-- [ ] 1-on-1 chat (Supabase Realtime)
-- [ ] Distress button — 3 states (sent / waiting / failed)
-- [ ] Offline distress queue (IndexedDB + retry)
-- [ ] No-connection screen with map cache
-- [ ] Emergency number from `app_config` table
-- [ ] POI display on map (read-only)
+- [x] 1-on-1 chat (Supabase Realtime)
+- [x] Distress button — 3 states (sent / waiting / failed)
+- [x] Offline distress queue (IndexedDB + retry)
+- [x] No-connection screen with map cache
+- [x] Emergency number from `app_config` table
+- [x] POI display on map (read-only)
 
 ### Phase D — Admin / ChaML dashboard (Week 4)
-- [ ] Full map view with all users + quiet/stale indicators
-- [ ] Distress alerts (audio + visual) + incident log
-- [ ] User management (add/remove/extend) + WhatsApp invite
-- [ ] POI CRUD
-- [ ] Emergency protocol editor
-- [ ] Duty officer field (name + phone + backup)
-- [ ] Activity log with filters
+- [x] Full map view with all users + quiet/stale indicators
+- [x] Distress alerts (audio + visual) + incident log
+- [x] User management (add/remove/extend) + WhatsApp invite
+- [x] POI CRUD
+- [x] Emergency protocol editor
+- [x] Duty officer field (name + phone + backup)
+- [x] Activity log with filters
 
 ### Phase E — Polish + hardening (Week 4–5)
+- [x] Production deploy path documented (Vercel + Render + keep-alive)
 - [ ] Auto-expiry enforcement (middleware check on every request)
 - [ ] Auto-delete old data (location_history 24h, messages 30d) via pg_cron
 - [ ] Weekly backup script to Google Drive

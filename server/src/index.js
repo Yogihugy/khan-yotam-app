@@ -3,6 +3,8 @@ import express from 'express';
 import cors from 'cors';
 import { healthRouter } from './routes/health.js';
 import { authRouter } from './routes/auth.js';
+import { distressRouter } from './routes/distress.js';
+import { adminRouter } from './routes/admin.js';
 import { requireEnv } from './config.js';
 
 const app = express();
@@ -18,6 +20,8 @@ app.use(express.json());
 
 app.use(healthRouter);
 app.use('/auth', authRouter);
+app.use('/api', distressRouter);
+app.use('/api/admin', adminRouter);
 
 app.use((err, _req, res, _next) => {
   console.error(err);
