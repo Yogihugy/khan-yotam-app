@@ -1,8 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { verifyInvite } from '../lib/api';
-import { setSessionFromTokens } from '../lib/supabase';
+import { verifyInvite, type PublicUser } from '../lib/api';
+import { fetchOwnUser } from '../lib/mapData';
+import { getSupabase, setSessionFromTokens } from '../lib/supabase';
 import { hasCompletedOnboarding, writeCachedUser } from '../lib/userStore';
+
+function isProfileComplete(user: PublicUser): boolean {
+  return Boolean(user.traveler_type && user.name && user.color);
+}
 
 export function InvitePage() {
   const { token } = useParams<{ token: string }>();
@@ -12,6 +17,30 @@ export function InvitePage() {
   useEffect(() => {
     let cancelled = false;
 
+    function continueFromUser(user: PublicUser, profileComplete: boolean) {
+      writeCachedUser(user);
+      if (!hasCompletedOnboarding()) {
+        navigate('/onboarding', { replace: true });
+      } else if (profileComplete) {
+        navigate('/', { replace: true });
+      } else {
+        navigate('/complete-profile', { replace: true });
+      }
+    }
+
+    async function tryResumeExistingSession(): Promise<boolean> {
+      const supabase = getSupabase();
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) return false;
+
+      const user = await fetchOwnUser();
+      if (!user) return false;
+      if (cancelled) return true;
+
+      continueFromUser(user, isProfileComplete(user));
+      return true;
+    }
+
     async function run() {
       if (!token) {
         setError('קישור הזמנה לא תקין');
@@ -19,23 +48,33 @@ export function InvitePage() {
       }
 
       try {
-        const result = await verifyInvite(token);
-        await setSessionFromTokens(result.session);
-        writeCachedUser(result.user);
+        if (await tryResumeExistingSession()) return;
 
+        const result = await verifyInvite(token);
+        // TEMP DEBUG — remove after prod setSession investigation
+        console.log('[DEBUG InvitePage] verifyInvite result', {
+          hasSession: Boolean(result?.session),
+          profile_complete: result?.profile_complete,
+          userId: result?.user?.id,
+          sessionKeys:
+            result?.session && typeof result.session === 'object'
+              ? Object.keys(result.session)
+              : null,
+        });
+        await setSessionFromTokens(result.session);
         if (cancelled) return;
 
-        if (!hasCompletedOnboarding()) {
-          navigate('/onboarding', { replace: true });
-        } else if (result.profile_complete) {
-          navigate('/', { replace: true });
-        } else {
-          navigate('/complete-profile', { replace: true });
-        }
+        continueFromUser(result.user, result.profile_complete);
       } catch (err) {
-        if (!cancelled) {
-          setError(err instanceof Error ? err.message : 'שגיאה באימות ההזמנה');
+        if (cancelled) return;
+
+        try {
+          if (await tryResumeExistingSession()) return;
+        } catch {
+          // Fall through to the verify error below.
         }
+
+        setError(err instanceof Error ? err.message : 'שגיאה באימות ההזמנה');
       }
     }
 
