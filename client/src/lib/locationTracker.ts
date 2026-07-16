@@ -36,6 +36,11 @@ export function startLocationTracker(opts: TrackerOptions): () => void {
   let watchId: number | null = null;
   let inflight = false;
 
+  function handleWatchError(err: GeolocationPositionError) {
+    if (err.code === err.PERMISSION_DENIED) onStatus?.('denied');
+    else onStatus?.('error', err.message);
+  }
+
   async function publish(pos: LatLng, accuracy: number | null, forceHistory: boolean) {
     if (stopped || inflight) return;
     inflight = true;
@@ -103,22 +108,58 @@ export function startLocationTracker(opts: TrackerOptions): () => void {
     }
   }
 
+  function startWatch() {
+    if (watchId != null) navigator.geolocation.clearWatch(watchId);
+    watchId = navigator.geolocation.watchPosition(
+      (result) => handlePosition(result.coords),
+      handleWatchError,
+      {
+        enableHighAccuracy: true,
+        maximumAge: 5000,
+        timeout: 20000,
+      },
+    );
+  }
+
+  function refreshAfterWake() {
+    if (stopped) return;
+
+    // iOS may suspend geolocation while backgrounded, so restart the watch
+    // and force a one-shot publish when the page becomes visible again.
+    startWatch();
+    navigator.geolocation.getCurrentPosition(
+      (result) => {
+        const pos = {
+          lat: result.coords.latitude,
+          lng: result.coords.longitude,
+        };
+        const accuracy =
+          typeof result.coords.accuracy === 'number' ? result.coords.accuracy : null;
+        onPosition?.({ ...pos, accuracy });
+        void publish(pos, accuracy, true);
+      },
+      handleWatchError,
+      {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 20000,
+      },
+    );
+  }
+
+  function handleVisibilityChange() {
+    if (document.visibilityState === 'visible') {
+      refreshAfterWake();
+    }
+  }
+
   onStatus?.('watching');
-  watchId = navigator.geolocation.watchPosition(
-    (result) => handlePosition(result.coords),
-    (err) => {
-      if (err.code === err.PERMISSION_DENIED) onStatus?.('denied');
-      else onStatus?.('error', err.message);
-    },
-    {
-      enableHighAccuracy: true,
-      maximumAge: 5000,
-      timeout: 20000,
-    },
-  );
+  startWatch();
+  document.addEventListener('visibilitychange', handleVisibilityChange);
 
   return () => {
     stopped = true;
+    document.removeEventListener('visibilitychange', handleVisibilityChange);
     if (watchId != null) navigator.geolocation.clearWatch(watchId);
   };
 }
