@@ -83,7 +83,7 @@ export function MapView({ markers, pois = [], myLocation, onMessageUser, trail =
     const map = L.map(container, {
       zoomControl: false,
       maxBounds: bounds.pad(0.15),
-      minZoom: 9,
+      minZoom: 6,
       maxZoom: 18,
     });
 

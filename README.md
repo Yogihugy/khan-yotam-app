@@ -81,8 +81,8 @@ Code is ready to ship. Deploy configs already in the repo:
 | `VITE_API_URL` | `https://<your-render-service>.onrender.com` (**no** trailing slash) |
 | `VITE_KHAN_LAT` | `32.6905` |
 | `VITE_KHAN_LNG` | `34.9433` |
-| `VITE_MAP_BOUNDS_SW` | `32.48,34.88` |
-| `VITE_MAP_BOUNDS_NE` | `32.82,34.98` |
+| `VITE_MAP_BOUNDS_SW` | `29.5,34.2` |
+| `VITE_MAP_BOUNDS_NE` | `33.09,35.6` |
 | `VITE_APP_NAME` | `Khan Yotam` |
 
 5. Deploy → copy the `*.vercel.app` URL
