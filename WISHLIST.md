@@ -7,3 +7,7 @@ Informal list of future improvements and UX polish items. Not committed to a pha
 ## Map & UI
 
 1. **Map HUD status pills** — The pills "מיקום פעיל" / "האיקון שלי על המפה" take up significant screen space on mobile and add little value for regular end users. Consider hiding them by default, making them more compact, or only showing them in a debug/admin context.
+
+## Rollout / onboarding
+
+1. **Manual walkthrough video for Nir** — Create a short manual walkthrough video for Nir (first real user/admin) before sending him the production link. Show: opening the invite link, allowing location, viewing the map, using the distress button, and checking messages. Record on phone (mirrors his actual usage) with Hebrew narration. To be done just before sending him the invite.
