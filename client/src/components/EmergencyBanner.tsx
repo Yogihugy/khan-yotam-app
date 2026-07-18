@@ -25,8 +25,12 @@ export function EmergencyBanner({ className }: Props) {
   if (!phone) return null;
 
   return (
-    <a className={className ? `emergency-banner ${className}` : 'emergency-banner'} href={`tel:${phone}`}>
-      חירום: {phone}
+    <a
+      className={className ? `emergency-banner ${className}` : 'emergency-banner'}
+      href={`tel:${phone}`}
+      aria-label={`לחצו להתקשר לקצין תורן: ${phone}`}
+    >
+      חירום - לחצו להתקשר
     </a>
   );
 }
