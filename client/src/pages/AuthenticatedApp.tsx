@@ -8,6 +8,7 @@ import { updateOwnStatus } from '../lib/mapData';
 import { writeCachedUser, hasCompletedOnboarding } from '../lib/userStore';
 import { ChatThreadPage } from './ChatThreadPage';
 import { ExpiredPage } from './ExpiredPage';
+import { HelpPage } from './HelpPage';
 import { MapPage } from './MapPage';
 import { MessagesPage } from './MessagesPage';
 import { ProfilePage } from './ProfilePage';
@@ -125,6 +126,7 @@ export function AuthenticatedApp() {
               />
             }
           />
+          <Route path="help" element={<HelpPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

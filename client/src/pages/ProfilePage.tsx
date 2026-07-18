@@ -1,4 +1,5 @@
 import { useMemo, useState, type FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { PROFILE_COLORS, TRAVELER_TYPES, type TravelerType } from '../lib/constants';
 import { updateOwnProfile } from '../lib/mapData';
 import { writeCachedUser } from '../lib/userStore';
@@ -8,6 +9,24 @@ type Props = {
   user: PublicUser;
   onUserChange: (user: PublicUser) => void;
 };
+
+function HelpIcon() {
+  return (
+    <svg
+      className="profile-help-icon"
+      viewBox="0 0 24 24"
+      width="18"
+      height="18"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        fill="currentColor"
+        d="M18 2H8a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zm0 18H8V4h10v16zM6 6H4v14a2 2 0 0 0 2 2h10v-2H6V6zm4 3h6v2h-6V9zm0 4h6v2h-6v-2z"
+      />
+    </svg>
+  );
+}
 
 export function ProfilePage({ user, onUserChange }: Props) {
   const [name, setName] = useState(user.name || '');
@@ -47,6 +66,11 @@ export function ProfilePage({ user, onUserChange }: Props) {
       <form className="panel" onSubmit={onSubmit}>
         <h1>פרופיל</h1>
         <p className="muted">שם תצוגה, סוג מטייל וצבע על המפה.</p>
+
+        <Link to="/help" className="secondary profile-help-link">
+          <HelpIcon />
+          מדריך שימוש
+        </Link>
 
         <label>
           שם תצוגה
