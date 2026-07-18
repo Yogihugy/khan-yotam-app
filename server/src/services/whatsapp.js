@@ -76,9 +76,10 @@ export async function sendWhatsAppMessage({ phone, messageText, template }) {
   return { ok: true, mocked: false, data: await response.json().catch(() => null) };
 }
 
-export async function sendInviteWhatsApp({ phone, inviteUrl }) {
+export async function sendInviteWhatsApp({ phone, inviteUrl, name }) {
   const { wati } = getConfig();
-  const messageText = `Join the Sea Trail map — ${inviteUrl} (expires in 48 hours)`;
+  const displayName = String(name || '').trim() || 'אורח/ת';
+  const messageText = `שלום ${displayName}, מוזמנים להצטרף לקהילת חאן יותם! לחצו על הקישור כדי להתחיל: ${inviteUrl}`;
 
   return sendWhatsAppMessage({
     phone,
@@ -89,6 +90,7 @@ export async function sendInviteWhatsApp({ phone, inviteUrl }) {
           name: wati.inviteTemplateName,
           language: wati.inviteTemplateLanguage,
           parameters: [
+            { name: 'name', value: displayName },
             { name: 'invite_link', value: inviteUrl },
           ],
         },

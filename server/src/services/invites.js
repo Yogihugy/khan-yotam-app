@@ -94,7 +94,7 @@ export async function createInvitedUser({
 
   let whatsapp = null;
   if (sendWhatsApp) {
-    whatsapp = await sendInviteWhatsApp({ phone, inviteUrl });
+    whatsapp = await sendInviteWhatsApp({ phone, inviteUrl, name });
     await supabase.from('activity_log').insert({
       user_id: userId,
       event_type: 'invite_sent',
