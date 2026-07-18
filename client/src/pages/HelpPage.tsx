@@ -1,14 +1,29 @@
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { EmergencyBanner } from '../components/EmergencyBanner';
 
+function goBackOrHome(navigate: ReturnType<typeof useNavigate>) {
+  const idx = (window.history.state as { idx?: number } | null)?.idx;
+  if (typeof idx === 'number' && idx > 0) {
+    navigate(-1);
+    return;
+  }
+  navigate('/', { replace: true });
+}
+
 export function HelpPage() {
+  const navigate = useNavigate();
+
   return (
     <main className="shell-page">
       <article className="panel help-panel">
         <header className="help-header">
-          <Link to="/profile" className="ghost-link">
-            ← חזרה לפרופיל
-          </Link>
+          <button
+            type="button"
+            className="ghost-link help-back-btn"
+            onClick={() => goBackOrHome(navigate)}
+          >
+            ← חזרה
+          </button>
           <h1>מדריך שימוש</h1>
           <p className="muted">איך להשתמש באפליקציית שביל הים של חאן יותם.</p>
         </header>
