@@ -5,7 +5,7 @@ import { flushDistressQueue, sendOrQueueDistress } from '../lib/distressSend';
 
 type State = 'idle' | 'sending' | 'sent' | 'waiting' | 'failed';
 
-const LOCK_MS = 60_000;
+const LOCK_MS = 30_000;
 
 function WhatsAppIcon() {
   return (
