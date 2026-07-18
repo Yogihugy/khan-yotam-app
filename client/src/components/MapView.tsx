@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { appConfig } from '../lib/config';
@@ -59,6 +60,7 @@ function escapeHtml(value: string) {
 }
 
 export function MapView({ markers, pois = [], myLocation, onMessageUser, trail = [] }: Props) {
+  const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const userLayerRef = useRef<L.LayerGroup | null>(null);
@@ -66,10 +68,12 @@ export function MapView({ markers, pois = [], myLocation, onMessageUser, trail =
   const trailLayerRef = useRef<L.LayerGroup | null>(null);
   const myLocationRef = useRef(myLocation);
   const onMessageRef = useRef(onMessageUser);
+  const navigateRef = useRef(navigate);
   const centeredRef = useRef(false);
 
   myLocationRef.current = myLocation;
   onMessageRef.current = onMessageUser;
+  navigateRef.current = navigate;
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -93,6 +97,7 @@ export function MapView({ markers, pois = [], myLocation, onMessageUser, trail =
       crossOrigin: true,
     }).addTo(map);
 
+    // bottomleft stack (bottom → top): zoom, locate, help
     L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
     const LocateControl = L.Control.extend({
@@ -102,6 +107,7 @@ export function MapView({ markers, pois = [], myLocation, onMessageUser, trail =
         btn.title = 'חזרה למיקום שלי';
         btn.setAttribute('aria-label', 'חזרה למיקום שלי');
         btn.textContent = '◎';
+        L.DomEvent.disableClickPropagation(btn);
         L.DomEvent.on(btn, 'click', (e) => {
           L.DomEvent.stop(e);
           const here = myLocationRef.current;
@@ -113,6 +119,23 @@ export function MapView({ markers, pois = [], myLocation, onMessageUser, trail =
       },
     });
     map.addControl(new LocateControl({ position: 'bottomleft' }));
+
+    const HelpControl = L.Control.extend({
+      onAdd() {
+        const btn = L.DomUtil.create('button', 'leaflet-bar locate-me-btn map-help-btn');
+        btn.type = 'button';
+        btn.title = 'מדריך שימוש';
+        btn.setAttribute('aria-label', 'מדריך שימוש');
+        btn.textContent = '?';
+        L.DomEvent.disableClickPropagation(btn);
+        L.DomEvent.on(btn, 'click', (e) => {
+          L.DomEvent.stop(e);
+          navigateRef.current('/help');
+        });
+        return btn;
+      },
+    });
+    map.addControl(new HelpControl({ position: 'bottomleft' }));
 
     // Fallback Khan marker always present (env coords); DB POIs layer adds more.
     L.marker([appConfig.khanLat, appConfig.khanLng], {
