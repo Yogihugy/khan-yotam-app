@@ -224,9 +224,7 @@ export function MapPage({ user }: Props) {
         onMessageUser={(peerId) => navigate(`/messages/${peerId}`)}
       />
       <div className="map-hud">
-        {trackerStatus === 'watching' && <span className="hud-pill">מיקום פעיל</span>}
         {trackerStatus === 'denied' && <span className="hud-pill danger">אין GPS</span>}
-        {myLocation && <span className="hud-pill">האיקון שלי על המפה</span>}
         {user.status === 'quiet' && <span className="hud-pill quiet">מצב שקט</span>}
         {!online && <span className="hud-pill danger">אופליין</span>}
         {error && <span className="hud-pill danger">{error}</span>}
