@@ -15,6 +15,66 @@ type Props = {
   trail?: Array<{ lat: number; lng: number }>;
 };
 
+type MarkerWithUser = L.Marker & { options: L.MarkerOptions & { userId?: string } };
+
+/** Pixel radius: markers closer than this get stacked labels. */
+export const LABEL_COLLISION_PX = 44;
+/** Vertical gap between stacked labels (px, upward). */
+export const LABEL_STACK_PX = 18;
+
+type PointIn = { id: string; x: number; y: number };
+
+/**
+ * Assign vertical label offsets for overlapping on-screen marker positions.
+ * Supports N-way clusters (not just pairs). Circles stay put; only labels shift.
+ */
+export function computeLabelStackOffsets(
+  points: PointIn[],
+  collisionPx = LABEL_COLLISION_PX,
+  stackPx = LABEL_STACK_PX,
+): Map<string, number> {
+  const n = points.length;
+  const parent = Array.from({ length: n }, (_, i) => i);
+
+  function find(i: number): number {
+    return parent[i] === i ? i : (parent[i] = find(parent[i]));
+  }
+  function union(a: number, b: number) {
+    const ra = find(a);
+    const rb = find(b);
+    if (ra !== rb) parent[ra] = rb;
+  }
+
+  for (let i = 0; i < n; i++) {
+    for (let j = i + 1; j < n; j++) {
+      const dx = points[i].x - points[j].x;
+      const dy = points[i].y - points[j].y;
+      if (Math.hypot(dx, dy) < collisionPx) union(i, j);
+    }
+  }
+
+  const clusters = new Map<number, number[]>();
+  for (let i = 0; i < n; i++) {
+    const root = find(i);
+    const list = clusters.get(root);
+    if (list) list.push(i);
+    else clusters.set(root, [i]);
+  }
+
+  const offsets = new Map<string, number>();
+  for (const members of clusters.values()) {
+    members.sort((a, b) => {
+      const dy = points[a].y - points[b].y;
+      if (dy !== 0) return dy;
+      return points[a].id.localeCompare(points[b].id);
+    });
+    members.forEach((idx, stackIndex) => {
+      offsets.set(points[idx].id, -stackIndex * stackPx);
+    });
+  }
+  return offsets;
+}
+
 function userIcon(marker: MapMarkerModel) {
   const initials = initialsFromName(marker.name);
   const opacity = marker.isStale || marker.isQuiet ? 0.55 : 1;
@@ -27,8 +87,10 @@ function userIcon(marker: MapMarkerModel) {
   return L.divIcon({
     className: 'user-marker-wrap',
     html: `<div class="user-marker${selfClass}" style="--c:${marker.color};opacity:${opacity}">
-      <div class="user-marker-name">${escapeHtml(marker.name)}</div>
-      ${age}
+      <div class="user-marker-labels">
+        <div class="user-marker-name">${escapeHtml(marker.name)}</div>
+        ${age}
+      </div>
       <div class="user-marker-dot" style="border:${ring}">${escapeHtml(initials)}</div>
     </div>`,
     iconSize: [64, 72],
@@ -57,6 +119,30 @@ function escapeHtml(value: string) {
     .replaceAll('<', '&lt;')
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;');
+}
+
+function layoutUserLabelOffsets(map: L.Map, layer: L.LayerGroup) {
+  const points: PointIn[] = [];
+  const labelEls = new Map<string, HTMLElement>();
+
+  layer.eachLayer((ly) => {
+    if (!(ly instanceof L.Marker)) return;
+    const marker = ly as MarkerWithUser;
+    const userId = marker.options.userId;
+    if (!userId) return;
+    const root = marker.getElement();
+    const labelEl = root?.querySelector('.user-marker-labels') as HTMLElement | null;
+    if (!labelEl) return;
+    const pt = map.latLngToContainerPoint(marker.getLatLng());
+    points.push({ id: userId, x: pt.x, y: pt.y });
+    labelEls.set(userId, labelEl);
+  });
+
+  const offsets = computeLabelStackOffsets(points);
+  for (const [id, el] of labelEls) {
+    const oy = offsets.get(id) ?? 0;
+    el.style.transform = oy ? `translateY(${oy}px)` : '';
+  }
 }
 
 export function MapView({ markers, pois = [], myLocation, onMessageUser, trail = [] }: Props) {
@@ -156,6 +242,12 @@ export function MapView({ markers, pois = [], myLocation, onMessageUser, trail =
     map.fitBounds(bounds, { padding: [24, 24] });
     mapRef.current = map;
 
+    const relayout = () => {
+      const layer = userLayerRef.current;
+      if (layer) layoutUserLabelOffsets(map, layer);
+    };
+    map.on('zoomend moveend', relayout);
+
     const invalidate = () => map.invalidateSize();
     requestAnimationFrame(invalidate);
     const t1 = window.setTimeout(invalidate, 100);
@@ -167,6 +259,7 @@ export function MapView({ markers, pois = [], myLocation, onMessageUser, trail =
       window.clearTimeout(t1);
       window.clearTimeout(t2);
       ro.disconnect();
+      map.off('zoomend moveend', relayout);
       map.remove();
       mapRef.current = null;
       userLayerRef.current = null;
@@ -184,12 +277,16 @@ export function MapView({ markers, pois = [], myLocation, onMessageUser, trail =
   }, [myLocation]);
 
   useEffect(() => {
+    const map = mapRef.current;
     const layer = userLayerRef.current;
-    if (!layer) return;
+    if (!layer || !map) return;
     layer.clearLayers();
 
     for (const marker of markers) {
-      const m = L.marker([marker.lat, marker.lng], { icon: userIcon(marker) });
+      const m = L.marker([marker.lat, marker.lng], {
+        icon: userIcon(marker),
+        userId: marker.userId,
+      } as L.MarkerOptions);
       if (!marker.isSelf) {
         const popup = `
           <div class="map-popup" dir="rtl">
@@ -212,6 +309,8 @@ export function MapView({ markers, pois = [], myLocation, onMessageUser, trail =
       }
       m.addTo(layer);
     }
+
+    requestAnimationFrame(() => layoutUserLabelOffsets(map, layer));
   }, [markers]);
 
   useEffect(() => {

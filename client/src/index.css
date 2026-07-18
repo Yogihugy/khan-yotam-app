@@ -377,6 +377,13 @@ code {
   font-family: inherit;
 }
 
+.user-marker-labels {
+  display: grid;
+  justify-items: center;
+  gap: 0.1rem;
+  will-change: transform;
+}
+
 .user-marker-name,
 .map-marker-age,
 .khan-marker-label {
