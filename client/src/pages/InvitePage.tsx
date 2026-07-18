@@ -51,16 +51,6 @@ export function InvitePage() {
         if (await tryResumeExistingSession()) return;
 
         const result = await verifyInvite(token);
-        // TEMP DEBUG — remove after prod setSession investigation
-        console.log('[DEBUG InvitePage] verifyInvite result', {
-          hasSession: Boolean(result?.session),
-          profile_complete: result?.profile_complete,
-          userId: result?.user?.id,
-          sessionKeys:
-            result?.session && typeof result.session === 'object'
-              ? Object.keys(result.session)
-              : null,
-        });
         await setSessionFromTokens(result.session);
         if (cancelled) return;
 
