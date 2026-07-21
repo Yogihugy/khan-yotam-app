@@ -121,6 +121,14 @@ function escapeHtml(value: string) {
     .replaceAll('"', '&quot;');
 }
 
+/** Linkify http(s) URLs in already-escaped text. Call only after escapeHtml. */
+function linkifyEscapedUrls(escaped: string): string {
+  return escaped.replace(
+    /https?:\/\/[^\s<]+/gi,
+    (url) => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`,
+  );
+}
+
 function layoutUserLabelOffsets(map: L.Map, layer: L.LayerGroup) {
   const points: PointIn[] = [];
   const labelEls = new Map<string, HTMLElement>();
@@ -223,19 +231,6 @@ export function MapView({ markers, pois = [], myLocation, onMessageUser, trail =
     });
     map.addControl(new HelpControl({ position: 'bottomleft' }));
 
-    // Fallback Khan marker always present (env coords); DB POIs layer adds more.
-    L.marker([appConfig.khanLat, appConfig.khanLng], {
-      icon: poiIcon({
-        id: 'khan-fallback',
-        name: 'חאן יותם',
-        description: null,
-        lat: appConfig.khanLat,
-        lng: appConfig.khanLng,
-        type: 'khan',
-      }),
-      interactive: false,
-    }).addTo(map);
-
     userLayerRef.current = L.layerGroup().addTo(map);
     poiLayerRef.current = L.layerGroup().addTo(map);
     trailLayerRef.current = L.layerGroup().addTo(map);
@@ -319,14 +314,10 @@ export function MapView({ markers, pois = [], myLocation, onMessageUser, trail =
     layer.clearLayers();
 
     for (const poi of pois) {
-      const nearKhan =
-        poi.type === 'khan' &&
-        Math.abs(poi.lat - appConfig.khanLat) < 0.0002 &&
-        Math.abs(poi.lng - appConfig.khanLng) < 0.0002;
-      if (nearKhan) continue;
-
       const m = L.marker([poi.lat, poi.lng], { icon: poiIcon(poi) });
-      const desc = poi.description ? `<div>${escapeHtml(poi.description)}</div>` : '';
+      const desc = poi.description
+        ? `<div>${linkifyEscapedUrls(escapeHtml(poi.description))}</div>`
+        : '';
       m.bindPopup(
         `<div class="map-popup" dir="rtl"><strong>${escapeHtml(poi.name)}</strong>${desc}</div>`,
       );
