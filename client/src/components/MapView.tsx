@@ -39,9 +39,9 @@ function poiIcon(poi: PoiRow) {
       <div class="poi-marker-label">${escapeHtml(poi.name)}</div>
       <div class="poi-marker-dot">${symbol}</div>
     </div>`,
-    iconSize: [72, 56],
-    iconAnchor: [36, 48],
-    popupAnchor: [0, -40],
+    iconSize: [54, 42],
+    iconAnchor: [27, 36],
+    popupAnchor: [0, -30],
   });
 }
 
