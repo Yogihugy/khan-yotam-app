@@ -14,8 +14,6 @@ type Props = {
   trail?: Array<{ lat: number; lng: number }>;
 };
 
-type MarkerWithUser = L.Marker & { options: L.MarkerOptions & { userId?: string } };
-
 function userIcon(marker: MapMarkerModel) {
   const opacity = marker.isStale || marker.isQuiet ? 0.55 : 1;
   const selfClass = marker.isSelf ? ' is-self' : '';
