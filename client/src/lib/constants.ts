@@ -14,6 +14,5 @@ export type TravelerType = 'hiker' | 'cyclist' | 'staff' | 'other';
 export const TRAVELER_TYPES: { value: TravelerType; label: string }[] = [
   { value: 'hiker', label: 'מטייל/ת ברגל' },
   { value: 'cyclist', label: 'רוכב/ת אופניים' },
-  { value: 'staff', label: 'צוות' },
   { value: 'other', label: 'אחר' },
 ];
