@@ -28,6 +28,8 @@ Informal list of future improvements and UX polish items. Not committed to a pha
 
 ## Future / v3 (from Nir's feedback session, July 2026)
 
+See also: [SMS_SELFREG_BRIEF.md](./SMS_SELFREG_BRIEF.md) for the full scoping on SMS/self-registration.
+
 1. **Self-service registration** — allow users to register directly via the Chan Yotam site without requiring admin pre-approval/invite. Admin retains ability to remove a user after the fact if they don't follow the rules.
    - *Size/risk: Medium→large. Today possession of the invite link IS the credential — no phone verification exists. Open registration without adding phone/WhatsApp verification (OTP-style) would let anyone register using someone else's phone number and receive their distress/invite traffic — should ship together with verification, not as a standalone smaller change. Also: soft-deleted users still hold a UNIQUE phone constraint, so "delete and re-register" needs a phone-reuse policy first.*
 
