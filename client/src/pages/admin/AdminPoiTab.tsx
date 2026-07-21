@@ -1,17 +1,29 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { adminApi, type PoiAdmin } from '../../lib/adminApi';
+import { notifyPoiChanged } from '../../lib/poiEvents';
 
 const TYPES: PoiAdmin['type'][] = ['khan', 'parking', 'water', 'warning', 'other'];
 
+/** Display labels for POI types — DB values stay unchanged (e.g. 'khan'). */
+const TYPE_LABELS: Record<PoiAdmin['type'], string> = {
+  khan: 'chan',
+  parking: 'parking',
+  water: 'water',
+  warning: 'warning',
+  other: 'other',
+};
+
+const EMPTY_FORM = {
+  name: '',
+  description: '',
+  lat: '',
+  lng: '',
+  type: 'other' as PoiAdmin['type'],
+};
+
 export function AdminPoiTab() {
   const [rows, setRows] = useState<PoiAdmin[]>([]);
-  const [form, setForm] = useState({
-    name: '',
-    description: '',
-    lat: '32.6905',
-    lng: '34.9433',
-    type: 'other' as PoiAdmin['type'],
-  });
+  const [form, setForm] = useState(EMPTY_FORM);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,8 +53,9 @@ export function AdminPoiTab() {
         await adminApi.createPoi(payload);
       }
       setEditingId(null);
-      setForm({ name: '', description: '', lat: '32.6905', lng: '34.9433', type: 'other' });
+      setForm(EMPTY_FORM);
       await refresh();
+      notifyPoiChanged();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'שמירה נכשלה');
     }
@@ -52,6 +65,7 @@ export function AdminPoiTab() {
     if (!window.confirm('למחוק נקודה זו?')) return;
     await adminApi.deletePoi(id);
     await refresh();
+    notifyPoiChanged();
   }
 
   return (
@@ -97,7 +111,7 @@ export function AdminPoiTab() {
           >
             {TYPES.map((t) => (
               <option key={t} value={t}>
-                {t}
+                {TYPE_LABELS[t]}
               </option>
             ))}
           </select>
@@ -121,7 +135,7 @@ export function AdminPoiTab() {
             {rows.map((p) => (
               <tr key={p.id}>
                 <td>{p.name}</td>
-                <td>{p.type}</td>
+                <td>{TYPE_LABELS[p.type]}</td>
                 <td>
                   {p.lat.toFixed(4)}, {p.lng.toFixed(4)}
                 </td>

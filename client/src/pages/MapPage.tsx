@@ -12,6 +12,7 @@ import {
 } from '../lib/mapData';
 import { startLocationTracker, type TrackerStatus } from '../lib/locationTracker';
 import { fetchPois, type PoiRow } from '../lib/poi';
+import { POI_CHANGED_EVENT } from '../lib/poiEvents';
 import { loadMapSnapshot, saveMapSnapshot, useOnlineStatus } from '../lib/offline';
 import { getSupabase } from '../lib/supabase';
 import type { PublicUser } from '../lib/api';
@@ -96,7 +97,16 @@ export function MapPage({ user }: Props) {
   useEffect(() => {
     void refreshPresence();
     const interval = window.setInterval(() => void refreshPresence(), 30000);
-    return () => window.clearInterval(interval);
+    const onPoiChanged = () => {
+      void fetchPois()
+        .then(setPois)
+        .catch(() => {});
+    };
+    window.addEventListener(POI_CHANGED_EVENT, onPoiChanged);
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener(POI_CHANGED_EVENT, onPoiChanged);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user.id, user.status, user.color, user.name, isAdmin]);
 

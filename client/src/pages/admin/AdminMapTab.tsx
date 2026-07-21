@@ -4,6 +4,7 @@ import { freshnessOf } from '../../lib/geo';
 import { adminApi, type AdminUserRow } from '../../lib/adminApi';
 import { fetchLiveLocations, type LiveLoc, type MapMarkerModel } from '../../lib/mapData';
 import { fetchPois, type PoiRow } from '../../lib/poi';
+import { POI_CHANGED_EVENT } from '../../lib/poiEvents';
 import { getSupabase } from '../../lib/supabase';
 
 export function AdminMapTab() {
@@ -33,6 +34,12 @@ export function AdminMapTab() {
   useEffect(() => {
     void refresh();
     const t = window.setInterval(() => void refresh(), 15000);
+    const onPoiChanged = () => {
+      void fetchPois()
+        .then(setPois)
+        .catch(() => {});
+    };
+    window.addEventListener(POI_CHANGED_EVENT, onPoiChanged);
     const supabase = getSupabase();
     const channel = supabase
       .channel('admin-live-locations')
@@ -42,6 +49,7 @@ export function AdminMapTab() {
       .subscribe();
     return () => {
       window.clearInterval(t);
+      window.removeEventListener(POI_CHANGED_EVENT, onPoiChanged);
       void supabase.removeChannel(channel);
     };
   }, []);
