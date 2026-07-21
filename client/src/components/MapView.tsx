@@ -17,11 +17,13 @@ type Props = {
 function userIcon(marker: MapMarkerModel) {
   const opacity = marker.isStale || marker.isQuiet ? 0.55 : 1;
   const selfClass = marker.isSelf ? ' is-self' : '';
+  const initial = firstInitial(marker.name);
 
   return L.divIcon({
     className: 'user-marker-wrap',
     html: `<div class="user-marker${selfClass}" style="--c:${marker.color};opacity:${opacity}">
-      <div class="user-marker-dot" aria-hidden="true"></div>
+      <div class="user-marker-head">${escapeHtml(initial)}</div>
+      <div class="user-marker-tail" aria-hidden="true"></div>
     </div>`,
     iconSize: [20, 32],
     iconAnchor: [10, 32],
@@ -72,6 +74,12 @@ function markerPopup(marker: MapMarkerModel) {
       <div>${escapeHtml(travelerLabel(marker.travelerType))}</div>
       ${action}
     </div>`;
+}
+
+function firstInitial(name: string): string {
+  const trimmed = name.trim();
+  if (!trimmed) return '?';
+  return trimmed[0].toUpperCase();
 }
 
 export function MapView({ markers, pois = [], myLocation, onMessageUser, trail = [] }: Props) {
