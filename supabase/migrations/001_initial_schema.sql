@@ -1,4 +1,4 @@
--- Khan Yotam V1 — initial schema (tables, indexes, RLS, realtime)
+-- Chan Yotam V1 — initial schema (tables, indexes, RLS, realtime)
 -- Run in Supabase SQL Editor or via supabase db push
 
 -- ---------------------------------------------------------------------------

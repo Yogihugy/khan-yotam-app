@@ -1,4 +1,4 @@
-# Khan Yotam — Sea Trail App — V1 Technical Specification
+# Chan Yotam — Sea Trail App — V1 Technical Specification
 **Version:** 1.1 (post Perplexity + Cursor review)  
 **Date:** June 2026  
 **Platform:** PWA (Progressive Web App)  
@@ -10,9 +10,9 @@
 
 ## 1. Overview
 
-A live-map PWA for the Sea Trail (Shvil HaYam) between Dado Beach (Haifa) in the north and Caesarea in the south — approximately 50 km. Active users appear on the map with their name and location. Users can chat directly with each other and trigger a distress alert that immediately notifies the Khan Yotam duty officer via WhatsApp.
+A live-map PWA for the Sea Trail (Shvil HaYam) between Dado Beach (Haifa) in the north and Caesarea in the south — approximately 50 km. Active users appear on the map with their name and location. Users can chat directly with each other and trigger a distress alert that immediately notifies the Chan Yotam duty officer via WhatsApp.
 
-**Khan Yotam coordinates:** `lat: 32.6905, lng: 34.9433`  
+**Chan Yotam coordinates:** `lat: 32.6905, lng: 34.9433`  
 **Map bounding box:** `SW: 32.48, 34.88 — NE: 32.82, 34.98`
 
 ---
@@ -116,7 +116,7 @@ WhatsApp Business API via **WATI free plan** for v1:
 - App name + tagline
 - One-sentence description: "See who's on the trail, chat, call for help"
 - Location permission request (mandatory — with explanation)
-- Distress button explanation: "The red button is for emergencies only — it will immediately alert Khan Yotam staff"
+- Distress button explanation: "The red button is for emergencies only — it will immediately alert Chan Yotam staff"
 - "Got it, let's go" button → Profile screen
 - **If location denied:** clear message with "Open Settings" button — app cannot function without GPS
 - **Emergency phone number always visible** (configurable by admin in DB, not hardcoded)
@@ -133,7 +133,7 @@ WhatsApp Business API via **WATI free plan** for v1:
 - Active user: colored circle with initials + name above + timestamp if 10–30 min stale
 - Own icon: bold border
 - Quiet user: hidden from others; admin sees gray faded icon
-- Khan Yotam: house icon with label at `32.6905, 34.9433`
+- Chan Yotam: house icon with label at `32.6905, 34.9433`
 - POI: icon by type (khan / parking / water / warning / other)
 - Tap on user icon: popup with name + traveler_type + "Send message" button
 
@@ -176,7 +176,7 @@ Bottom nav button → modal:
 
 Shown when session is valid but `expires_at` has passed:
 - "Your access has expired"
-- "Contact Khan Yotam to renew"
+- "Contact Chan Yotam to renew"
 - Emergency number shown
 - No way to bypass — blocked until admin manually renews
 
@@ -475,7 +475,7 @@ Enable replication for:
 
 **Backups:**
 - Supabase: daily automatic, 7 days retention
-- Weekly export to Khan Google Drive (automated script)
+- Weekly export to Chan Google Drive (automated script)
 - Code: GitHub
 
 **Note on Express:** In v1, Express handles secrets and WhatsApp. In v2, consider migrating to Supabase Edge Functions to eliminate the separate server.
@@ -501,7 +501,7 @@ Enable replication for:
 - [x] Smart location updates (10m threshold / 2min heartbeat)
 - [x] Live location upsert + location_history inserts
 - [x] User icons on map with freshness policy (10/30 min thresholds)
-- [x] Khan Yotam POI hardcoded at 32.6905, 34.9433
+- [x] Chan Yotam POI hardcoded at 32.6905, 34.9433
 - [x] Quiet mode (status toggle)
 - [x] Expired access screen
 
@@ -552,10 +552,10 @@ Enable replication for:
 - Group chat
 - Accommodation booking / hostel management
 - English / Arabic UI
-- Additional khan locations (infrastructure already supports it — just add POI rows)
+- Additional chan locations (infrastructure already supports it — just add POI rows)
 - Distress call cancellation
 - Supabase Edge Functions (replace Express)
-- Per-khan admin scope
+- Per-chan admin scope
 
 ---
 
@@ -571,7 +571,7 @@ Enable replication for:
 | Vercel | Free | Free | Free |
 | **Total** | **$0** | **~$32/mo** | **~$57–99/mo** |
 
-**Most likely v2 scenario:** Supabase Pro + Render Starter = **$32/month** — covers multiple khans, hundreds of concurrent users, no cold starts, proper backups.
+**Most likely v2 scenario:** Supabase Pro + Render Starter = **$32/month** — covers multiple chans, hundreds of concurrent users, no cold starts, proper backups.
 
 ### What Triggers the Upgrade
 
@@ -580,7 +580,7 @@ Enable replication for:
 | Render cold starts affecting distress calls | Upgrade Render to Starter ($7/mo) immediately |
 | DB approaching 500MB or needing longer backups | Upgrade Supabase to Pro ($25/mo) |
 | More than 500 WhatsApp conversations/month | Upgrade WATI to Growth ($49/mo) |
-| Adding 3+ khans with active user bases | Consider Supabase Pro for performance |
+| Adding 3+ chans with active user bases | Consider Supabase Pro for performance |
 
 ### What to Build Right in V1 (zero extra effort, big v2 payoff)
 
@@ -597,8 +597,8 @@ KHAN_LAT=32.6905
 KHAN_LNG=34.9433
 ```
 
-**2. Multi-khan support is already DB-only**
-The POI table handles all khan locations. Adding Khan #2 = insert one row in `poi` table with `type = 'khan'`. Zero code changes. The map renders all khans automatically.
+**2. Multi-chan support is already DB-only**
+The POI table handles all chan locations. Adding Chan #2 = insert one row in `poi` table with `type = 'khan'`. Zero code changes. The map renders all chans automatically.
 
 **3. Keep-alive cron is infrastructure, not app code**
 The GitHub Actions keep-alive ping lives outside the app. When upgrading to Render Starter (always-on), just delete the workflow file. No app code touched.
@@ -606,18 +606,18 @@ The GitHub Actions keep-alive ping lives outside the app. When upgrading to Rend
 **4. No free-tier workarounds inside application logic**
 Offline queue, cache, retries — these are good engineering regardless of tier. But nothing in the app should "know" it's on a free plan. Upgrade = change env vars + delete keep-alive cron.
 
-**5. Per-khan admin scope (ready for v2)**
-The `duty_officer` table and admin role are already global. When v2 adds per-khan admins, add a `khan_id` column to `users` and `duty_officer` — RLS policies extend naturally.
+**5. Per-chan admin scope (ready for v2)**
+The `duty_officer` table and admin role are already global. When v2 adds per-chan admins, add a `khan_id` column to `users` and `duty_officer` — RLS policies extend naturally.
 
 ### V2 Feature Additions (no architectural changes needed)
 
 | Feature | What's needed |
 |---------|--------------|
-| Additional khans | Insert POI rows, assign local admin users |
+| Additional chans | Insert POI rows, assign local admin users |
 | Real background GPS on iOS | Migrate to React Native (separate project, same backend) |
 | English / Arabic UI | Add i18n layer (react-i18next), translate strings |
 | Accommodation booking | New tables + screens, same stack |
-| Per-khan distress routing | Add `khan_id` to `duty_officer`, filter in Express |
+| Per-chan distress routing | Add `khan_id` to `duty_officer`, filter in Express |
 | Push notifications (iOS) | React Native only |
 
 ### What to Tell Cursor
@@ -625,7 +625,7 @@ The `duty_officer` table and admin role are already global. When v2 adds per-kha
 > Build with upgrade in mind:
 > - All configuration via environment variables — no hardcoded values
 > - Keep-alive cron is a GitHub Actions file, not application logic
-> - Multi-khan support is purely DB-driven — no conditional code per location
+> - Multi-chan support is purely DB-driven — no conditional code per location
 > - Express stays lean — only secrets and WhatsApp logic; everything else via Supabase direct
 > - No free-tier assumptions baked into app logic
 
@@ -634,6 +634,6 @@ The `duty_officer` table and admin role are already global. When v2 adds per-kha
 - Group chat
 - Accommodation booking / hostel management
 - English UI
-- Additional khan locations along the trail (infrastructure already supports it — just add POI)
+- Additional chan locations along the trail (infrastructure already supports it — just add POI)
 - Distress call cancellation
 - Supabase Edge Functions (replace Express)

@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
       manifest: {
-        name: 'Khan Yotam — Sea Trail',
-        short_name: 'Khan Yotam',
+        name: 'Chan Yotam — Sea Trail',
+        short_name: 'Chan Yotam',
         description: 'See who\'s on the Sea Trail, chat, call for help',
         lang: 'he',
         dir: 'rtl',

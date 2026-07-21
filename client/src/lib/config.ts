@@ -16,7 +16,7 @@ export const appConfig = {
   khanLng: Number(import.meta.env.VITE_KHAN_LNG || 34.9433),
   mapBoundsSw: parseLatLngPair(import.meta.env.VITE_MAP_BOUNDS_SW as string | undefined, [32.48, 34.88]),
   mapBoundsNe: parseLatLngPair(import.meta.env.VITE_MAP_BOUNDS_NE as string | undefined, [32.82, 34.98]),
-  appName: (import.meta.env.VITE_APP_NAME as string | undefined) || 'Khan Yotam',
+  appName: (import.meta.env.VITE_APP_NAME as string | undefined) || 'Chan Yotam',
 };
 
 export function assertClientEnv() {

@@ -1,4 +1,4 @@
-# Khan Yotam — Sea Trail App
+# Chan Yotam — Sea Trail App
 
 Live-map PWA for the Sea Trail (Shvil HaYam). Hebrew RTL UI. Stack: React + Vite + PWA, Express, Supabase, Leaflet (Phase B+), WATI WhatsApp.
 
@@ -83,7 +83,7 @@ Code is ready to ship. Deploy configs already in the repo:
 | `VITE_KHAN_LNG` | `34.9433` |
 | `VITE_MAP_BOUNDS_SW` | `29.5,34.2` |
 | `VITE_MAP_BOUNDS_NE` | `33.09,35.6` |
-| `VITE_APP_NAME` | `Khan Yotam` |
+| `VITE_APP_NAME` | `Chan Yotam` |
 
 5. Deploy → copy the `*.vercel.app` URL
 6. Go back to Render → set `CORS_ORIGIN` and `APP_URL` to that Vercel URL → **Manual Deploy** so CORS updates
@@ -133,7 +133,7 @@ Communication + distress: 1-on-1 chat, `POST /api/distress` + WhatsApp mock, Ind
 
 ## Phase B status
 
-Core map experience: onboarding + location permission, Leaflet/OSM map, smart GPS upserts (10 m / 2 min heartbeat + history), freshness icons, Khan Yotam POI, quiet-mode status toggle, profile screen, expired-access gate.
+Core map experience: onboarding + location permission, Leaflet/OSM map, smart GPS upserts (10 m / 2 min heartbeat + history), freshness icons, Chan Yotam POI, quiet-mode status toggle, profile screen, expired-access gate.
 
 ## Repo layout
 
@@ -254,7 +254,7 @@ Invite **creation** (auth user + `public.users` + token + WhatsApp) is implement
 
 - All config via environment variables
 - Keep-alive is infrastructure (Actions), not application logic
-- Multi-khan is DB/POI-driven
+- Multi-chan is DB/POI-driven
 - Express stays lean (secrets + WhatsApp + invite/auth)
 
 ## Phase boundary

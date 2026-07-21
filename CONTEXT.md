@@ -1,6 +1,14 @@
-# Khan Yotam — session context
+# Chan Yotam — session context
 
 Handoff notes for the live Sea Trail map PWA. For the original product spec see [`khan_yotam_v1_spec.md`](./khan_yotam_v1_spec.md). For polish backlog see [`WISHLIST.md`](./WISHLIST.md).
+
+---
+
+## Working methodology
+
+1. **Investigate first.** When asked to investigate or fix something, investigate and report findings only — do not write, edit, or commit any code until explicitly told to proceed.
+2. **Keep fixes local until approved.** After making changes, leave them uncommitted for review/testing. Never `git commit` or `git push` without explicit go-ahead in that same session.
+3. **State commit status clearly.** Report whether a fix is committed, uncommitted-local, or not yet started. If a bug is reported “still broken” and a related fix is still uncommitted, check and mention that before re-diagnosing.
 
 ---
 

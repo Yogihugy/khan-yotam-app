@@ -34,5 +34,5 @@ app.use((err, _req, res, _next) => {
 requireEnv(['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY']);
 
 app.listen(port, () => {
-  console.log(`Khan Yotam API listening on :${port}`);
+  console.log(`Chan Yotam API listening on :${port}`);
 });
