@@ -1,6 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react';
+import { MapView } from '../../components/MapView';
 import { adminApi, type PoiAdmin } from '../../lib/adminApi';
 import { notifyPoiChanged } from '../../lib/poiEvents';
+import type { PoiRow } from '../../lib/poi';
 
 const TYPES: PoiAdmin['type'][] = ['khan', 'parking', 'water', 'warning', 'other'];
 
@@ -26,6 +28,7 @@ export function AdminPoiTab() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [picking, setPicking] = useState(false);
 
   const refresh = async () => {
     const { poi } = await adminApi.listPoi();
@@ -35,6 +38,15 @@ export function AdminPoiTab() {
   useEffect(() => {
     void refresh().catch((err) => setError(err instanceof Error ? err.message : 'שגיאה'));
   }, []);
+
+  const pois: PoiRow[] = rows.map((p) => ({
+    id: p.id,
+    name: p.name,
+    description: p.description,
+    lat: p.lat,
+    lng: p.lng,
+    type: p.type,
+  }));
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -54,6 +66,7 @@ export function AdminPoiTab() {
       }
       setEditingId(null);
       setForm(EMPTY_FORM);
+      setPicking(false);
       await refresh();
       notifyPoiChanged();
     } catch (err) {
@@ -69,7 +82,7 @@ export function AdminPoiTab() {
   }
 
   return (
-    <div className="admin-tab">
+    <div className="admin-tab admin-poi-tab">
       <h2>נקודות עניין</h2>
       <form className="admin-form-grid" onSubmit={onSubmit}>
         <label>
@@ -116,11 +129,40 @@ export function AdminPoiTab() {
             ))}
           </select>
         </label>
+        <button
+          type="button"
+          className={picking ? 'primary' : 'secondary'}
+          onClick={() => setPicking((p) => !p)}
+        >
+          {picking ? 'ביטול בחירה' : 'בחר מיקום במפה'}
+        </button>
         <button type="submit" className="primary">
           {editingId ? 'עדכון' : 'הוספה'}
         </button>
       </form>
+      {picking && <p className="admin-pick-hint">לחצו על המפה לבחירת מיקום</p>}
       {error && <p className="error">{error}</p>}
+
+      <div className={`admin-poi-map-stage${picking ? ' is-picking' : ''}`}>
+        <MapView
+          markers={[]}
+          pois={pois}
+          myLocation={null}
+          onMapClick={
+            picking
+              ? (ll) => {
+                  setForm((f) => ({
+                    ...f,
+                    lat: String(ll.lat),
+                    lng: String(ll.lng),
+                  }));
+                  setPicking(false);
+                }
+              : undefined
+          }
+        />
+      </div>
+
       <div className="admin-table-wrap">
         <table className="admin-table">
           <thead>
@@ -152,6 +194,7 @@ export function AdminPoiTab() {
                         lng: String(p.lng),
                         type: p.type,
                       });
+                      setPicking(false);
                     }}
                   >
                     עריכה

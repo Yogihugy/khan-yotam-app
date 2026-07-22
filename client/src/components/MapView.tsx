@@ -12,6 +12,7 @@ type Props = {
   myLocation: { lat: number; lng: number } | null;
   onMessageUser?: (peerId: string) => void;
   trail?: Array<{ lat: number; lng: number }>;
+  onMapClick?: (latlng: { lat: number; lng: number }) => void;
 };
 
 function userIcon(marker: MapMarkerModel) {
@@ -82,7 +83,14 @@ function firstInitial(name: string): string {
   return trimmed[0].toUpperCase();
 }
 
-export function MapView({ markers, pois = [], myLocation, onMessageUser, trail = [] }: Props) {
+export function MapView({
+  markers,
+  pois = [],
+  myLocation,
+  onMessageUser,
+  trail = [],
+  onMapClick,
+}: Props) {
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
@@ -91,11 +99,13 @@ export function MapView({ markers, pois = [], myLocation, onMessageUser, trail =
   const trailLayerRef = useRef<L.LayerGroup | null>(null);
   const myLocationRef = useRef(myLocation);
   const onMessageRef = useRef(onMessageUser);
+  const onMapClickRef = useRef(onMapClick);
   const navigateRef = useRef(navigate);
   const centeredRef = useRef(false);
 
   myLocationRef.current = myLocation;
   onMessageRef.current = onMessageUser;
+  onMapClickRef.current = onMapClick;
   navigateRef.current = navigate;
 
   useEffect(() => {
@@ -166,6 +176,11 @@ export function MapView({ markers, pois = [], myLocation, onMessageUser, trail =
     map.fitBounds(bounds, { padding: [24, 24] });
     mapRef.current = map;
 
+    const handleMapClick = (e: L.LeafletMouseEvent) => {
+      onMapClickRef.current?.({ lat: e.latlng.lat, lng: e.latlng.lng });
+    };
+    map.on('click', handleMapClick);
+
     const invalidate = () => map.invalidateSize();
     requestAnimationFrame(invalidate);
     const t1 = window.setTimeout(invalidate, 100);
@@ -177,6 +192,7 @@ export function MapView({ markers, pois = [], myLocation, onMessageUser, trail =
       window.clearTimeout(t1);
       window.clearTimeout(t2);
       ro.disconnect();
+      map.off('click', handleMapClick);
       map.remove();
       mapRef.current = null;
       userLayerRef.current = null;
