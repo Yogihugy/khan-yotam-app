@@ -95,6 +95,7 @@ All other one-off test users were cleaned up. Soft-delete is via admin **הסר�
 
 - **Disconnect** (`התנתקות`) only clears the local Supabase session — it does **not** set `users.status` to `offline`.
 - Emergency call bar number ≠ Duty Officer phone (distress WhatsApp). No admin UI for `emergency_phone` yet.
+- **Location tracking** only runs on MapPage (the map view), not when admin is browsing the admin dashboard alone. This is intentional — admin reviewing users/POIs/logs isn't "on the trail" and doesn't need their own location broadcast. If an admin wants their location tracked/visible, they need to have the map view open, same as any other user.
 
 ---
 
