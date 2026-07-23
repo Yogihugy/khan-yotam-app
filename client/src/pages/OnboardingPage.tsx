@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { EmergencyBanner } from '../components/EmergencyBanner';
+import { InAppBrowserBanner } from '../components/InAppBrowserBanner';
 import { LocationDeniedHelp } from '../components/LocationDeniedHelp';
 import { appConfig } from '../lib/config';
 import {
@@ -12,7 +13,13 @@ import {
 export function OnboardingPage() {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
-  const [denied, setDenied] = useState(false);
+  const [denied, setDenied] = useState(() => {
+    // DEV-only visual test: ?forceLocationDenied=1 (does not touch geolocation APIs)
+    return (
+      import.meta.env.DEV &&
+      new URLSearchParams(window.location.search).has('forceLocationDenied')
+    );
+  });
   const [busy, setBusy] = useState(false);
 
   if (hasCompletedOnboarding()) {
@@ -54,6 +61,7 @@ export function OnboardingPage() {
   return (
     <main className="page">
       <div className="panel onboarding-panel">
+        <InAppBrowserBanner />
         <p className="brand">{appConfig.appName}</p>
         <h1>שביל הים — חי</h1>
         <p>רואים מי על השביל, משוחחים, וקוראים לעזרה כשצריך.</p>

@@ -519,6 +519,40 @@ code {
   z-index: 1000;
 }
 
+.inapp-browser-banner {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(212, 160, 72, 0.55);
+  background: rgba(212, 160, 72, 0.16);
+  color: var(--foam);
+  text-align: start;
+}
+
+.inapp-browser-banner p {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.inapp-browser-banner-sub {
+  font-weight: 400 !important;
+  font-size: 0.85rem !important;
+  color: var(--sand);
+}
+
+.inapp-browser-banner-dismiss {
+  justify-self: start;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--foam);
+  padding: 0.35rem 0.7rem;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
 .map-page.is-offline .map-canvas {
   filter: saturate(0.85);
 }

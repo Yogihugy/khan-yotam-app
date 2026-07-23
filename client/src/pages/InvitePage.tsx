@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { InAppBrowserBanner } from '../components/InAppBrowserBanner';
 import { verifyInvite, type PublicUser } from '../lib/api';
 import { fetchOwnUser } from '../lib/mapData';
 import { getSupabase, setSessionFromTokens } from '../lib/supabase';
@@ -77,6 +78,7 @@ export function InvitePage() {
   return (
     <main className="page">
       <div className="panel">
+        <InAppBrowserBanner />
         <h1>חאן יותם</h1>
         {error ? (
           <>
