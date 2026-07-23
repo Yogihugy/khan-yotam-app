@@ -1,8 +1,5 @@
 import { getConfig } from '../config.js';
-
-function normalizePhone(phone) {
-  return String(phone || '').replace(/[^\d]/g, '');
-}
+import { toWhatsAppDigits } from '../lib/phone.js';
 
 /**
  * Sends a WhatsApp message via WATI.
@@ -11,7 +8,7 @@ function normalizePhone(phone) {
  */
 export async function sendWhatsAppMessage({ phone, messageText, template }) {
   const { wati } = getConfig();
-  const whatsappNumber = normalizePhone(phone);
+  const whatsappNumber = toWhatsAppDigits(phone);
 
   if (!whatsappNumber) {
     throw Object.assign(new Error('Invalid WhatsApp phone number'), { status: 400 });
