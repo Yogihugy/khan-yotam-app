@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { getSupabaseAdmin } from '../lib/supabase.js';
-import { requestOtp } from '../services/otp.js';
+import { requestOtp, verifyOtp } from '../services/otp.js';
 import { createSessionForUser } from '../services/session.js';
 
 export const authRouter = Router();
@@ -30,6 +30,20 @@ function profileComplete(user) {
 authRouter.post('/register/request-otp', async (req, res, next) => {
   try {
     const result = await requestOtp(req.body?.phone);
+    return res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * POST /auth/register/verify-otp
+ * Body: { phone, code }
+ * Same response shape as verify-invite.
+ */
+authRouter.post('/register/verify-otp', async (req, res, next) => {
+  try {
+    const result = await verifyOtp(req.body?.phone, req.body?.code);
     return res.json(result);
   } catch (err) {
     next(err);
