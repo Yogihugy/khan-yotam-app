@@ -1,6 +1,6 @@
 # Chan Yotam — SMS & Self-Registration: Project Brief
 
-**Status:** Scoped, not yet built. Last updated: July 2026.
+**Status:** Backend built and deployed (mocked/safe). Frontend `/register` page is live but not yet linked from the main site. Last updated: July 2026.
 
 ## Goal
 Replace the planned WhatsApp Business integration with SMS, and let hikers register
@@ -61,28 +61,32 @@ architecture work, not a quick add-on.
   SMS, since plain SMS can't carry media), small effort, reuses existing infrastructure
 - **Unread message indicators** — parked, not urgent
 
-## Open decisions before build starts
-1. Twilio account setup (not yet created)
-2. Confirm Messages API (not Verify API) is the intended approach for OTP, per earlier scoping
-3. Decide whether to build self-registration + removal model as one combined delivery, or
-   phase it (e.g. SMS-for-distress first, self-registration later)
-4. Pre-build code review (see below) — not yet done
+## Decisions (resolved)
 
-## Recommendation: code review before starting
+1. **Twilio account** — DONE (account created; SID / Auth Token configured)
+2. **Messages API (not Verify API)** — CONFIRMED and implemented for OTP
+3. **Phasing** — self-registration built as one delivery, following:
+   phone-normalize → ban-table → OTP-request → OTP-verify → register-page
+4. **Pre-build code review** — DONE (multiple investigate-only reviews completed before each step)
 
-Given the scope of this change, a review pass is worth doing **before** writing any new
-code, not after:
+## Build progress
 
-- This touches the **auth/identity model** (phone becomes the sole credential via OTP,
-  replacing invite-link-as-credential)
-- It changes a **UNIQUE constraint's real-world meaning** (phone reuse policy across
-  soft-delete/hard-delete/re-registration)
-- It adds a **new table** (`banned_phones`) that the registration path must check
-- It touches **RLS policies**, the **distress alert send path**, and every place
-  `is_deleted` is currently checked
+- **Shared phone normalization** (`server/src/lib/phone.js`) — also fixed a WhatsApp
+  local-format (`05…`) send bug as a side effect
+- **`banned_phones` table** + ban check wired into the admin invite flow
+- **`otp_codes` table** + `POST /auth/register/request-otp` (rate-limited: 60s cooldown,
+  5 requests/hour cap)
+- **`POST /auth/register/verify-otp`** + `ensureSelfRegUser` — login for existing active
+  users, silent reconnect for soft-deleted users, create for new users
+- **Invite creation** now normalizes phone to E.164 (closed a legacy-format storage gap)
+- **`/register` page** live at https://khan-yotam-app.vercel.app/register — **not** yet
+  linked from GuestLanding (deliberate — still testing before going fully live)
 
-A focused, investigate-only review (same methodology as everything else this session)
-covering: the full current auth/invite flow, every `is_deleted` call site, current RLS
-policies touching `users`/`live_locations`, and the distress alert handler — would surface
-edge cases before they become half-built code. This is a bigger, more foundational change
-than anything shipped so far; a review pass first is proportionate to that, not overkill.
+## Remaining
+
+- Admin banned-phones view (list + unban action) — not built yet
+- Buy a real Twilio number / test live SMS send — currently `SMS_MOCK=true` everywhere
+  (safe; no real messages sent)
+- Link `/register` from GuestLanding when ready to launch to real users
+- Currently mid-test: just fixed a missing `OTP_PEPPER` env var on Render; need to verify
+  the full request-otp → verify-otp flow works end to end on the live site
