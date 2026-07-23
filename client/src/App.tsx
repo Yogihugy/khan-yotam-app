@@ -4,6 +4,7 @@ import { AuthenticatedApp } from './pages/AuthenticatedApp';
 import { CompleteProfilePage } from './pages/CompleteProfilePage';
 import { InvitePage } from './pages/InvitePage';
 import { OnboardingPage } from './pages/OnboardingPage';
+import { RegisterPage } from './pages/RegisterPage';
 
 assertClientEnv();
 
@@ -12,6 +13,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/invite/:token" element={<InvitePage />} />
+        <Route path="/register" element={<RegisterPage />} />
         <Route path="/onboarding" element={<OnboardingPage />} />
         <Route path="/complete-profile" element={<CompleteProfilePage />} />
         <Route path="/*" element={<AuthenticatedApp />} />

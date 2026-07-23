@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { InAppBrowserBanner } from '../components/InAppBrowserBanner';
 import { verifyInvite, type PublicUser } from '../lib/api';
+import { continueAfterAuth } from '../lib/continueAfterAuth';
 import { fetchOwnUser } from '../lib/mapData';
 import { getSupabase, setSessionFromTokens } from '../lib/supabase';
-import { hasCompletedOnboarding, writeCachedUser } from '../lib/userStore';
 
 function isProfileComplete(user: PublicUser): boolean {
   return Boolean(user.traveler_type && user.name && user.color);
@@ -18,17 +18,6 @@ export function InvitePage() {
   useEffect(() => {
     let cancelled = false;
 
-    function continueFromUser(user: PublicUser, profileComplete: boolean) {
-      writeCachedUser(user);
-      if (!hasCompletedOnboarding()) {
-        navigate('/onboarding', { replace: true });
-      } else if (profileComplete) {
-        navigate('/', { replace: true });
-      } else {
-        navigate('/complete-profile', { replace: true });
-      }
-    }
-
     async function tryResumeExistingSession(): Promise<boolean> {
       const supabase = getSupabase();
       const { data } = await supabase.auth.getSession();
@@ -38,7 +27,7 @@ export function InvitePage() {
       if (!user) return false;
       if (cancelled) return true;
 
-      continueFromUser(user, isProfileComplete(user));
+      continueAfterAuth(navigate, user, isProfileComplete(user));
       return true;
     }
 
@@ -55,7 +44,7 @@ export function InvitePage() {
         await setSessionFromTokens(result.session);
         if (cancelled) return;
 
-        continueFromUser(result.user, result.profile_complete);
+        continueAfterAuth(navigate, result.user, result.profile_complete);
       } catch (err) {
         if (cancelled) return;
 

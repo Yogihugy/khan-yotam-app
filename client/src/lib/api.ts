@@ -40,6 +40,24 @@ export function verifyInvite(token: string) {
   });
 }
 
+export function requestOtp(phone: string) {
+  return apiFetch<{ ok: true }>('/auth/register/request-otp', {
+    method: 'POST',
+    body: JSON.stringify({ phone }),
+  });
+}
+
+export function verifyOtp(phone: string, code: string) {
+  return apiFetch<{
+    session: Session;
+    profile_complete: boolean;
+    user: PublicUser;
+  }>('/auth/register/verify-otp', {
+    method: 'POST',
+    body: JSON.stringify({ phone, code }),
+  });
+}
+
 export function completeProfile(
   accessToken: string,
   payload: { name: string; traveler_type: string; color: string },
