@@ -1,5 +1,5 @@
 import { getSupabaseAdmin } from '../lib/supabase.js';
-import { sendWhatsAppMessage } from './whatsapp.js';
+import { sendSmsMessage } from './sms.js';
 
 const DUTY_OFFICER_ID = '00000000-0000-0000-0000-000000000001';
 
@@ -131,7 +131,7 @@ export async function handleDistressAlert({
 
   for (const phone of recipients) {
     try {
-      const result = await sendWhatsAppMessage({ phone, messageText });
+      const result = await sendSmsMessage({ phone, messageText });
       whatsappResults.push({ phone, ...result });
       if (result?.ok) whatsappSent = true;
     } catch (err) {

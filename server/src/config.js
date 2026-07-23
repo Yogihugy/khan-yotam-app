@@ -20,6 +20,13 @@ export function getConfig() {
       inviteTemplateName: process.env.WATI_INVITE_TEMPLATE_NAME || 'invite_sea_trail',
       inviteTemplateLanguage: process.env.WATI_INVITE_TEMPLATE_LANGUAGE || 'he',
     },
+    twilio: {
+      accountSid: process.env.TWILIO_ACCOUNT_SID || '',
+      authToken: process.env.TWILIO_AUTH_TOKEN || '',
+      fromNumber: process.env.TWILIO_FROM_NUMBER || '',
+      // Default true until a real Twilio sender is configured
+      mock: String(process.env.SMS_MOCK ?? 'true').toLowerCase() !== 'false',
+    },
   };
 }
 
