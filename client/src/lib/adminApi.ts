@@ -86,6 +86,11 @@ export const adminApi = {
     }),
   removeUser: (id: string) =>
     adminFetch<{ ok: boolean }>(`/users/${id}`, { method: 'DELETE' }),
+  banUser: (id: string, reason?: string) =>
+    adminFetch<{ ok: boolean }>(`/users/${id}/ban`, {
+      method: 'POST',
+      body: JSON.stringify(reason != null ? { reason } : {}),
+    }),
   extendUser: (id: string, days?: number) =>
     adminFetch<{ user: AdminUserRow }>(`/users/${id}/extend`, {
       method: 'PATCH',

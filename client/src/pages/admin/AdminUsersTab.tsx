@@ -49,6 +49,22 @@ export function AdminUsersTab() {
     }
   }
 
+  async function onBan(id: string) {
+    if (
+      !window.confirm(
+        'לחסום את מספר הטלפון של משתמש זה?\n\nהמשתמש יוסר, והמספר ייחסם מהרשמה מחדש (שונה מהסרה רגילה). ניתן לבטל את החסימה מאוחר יותר מרשימת החסימות.',
+      )
+    ) {
+      return;
+    }
+    try {
+      await adminApi.banUser(id);
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'חסימה נכשלה');
+    }
+  }
+
   async function onExtend(id: string) {
     try {
       await adminApi.extendUser(id);
@@ -115,6 +131,9 @@ export function AdminUsersTab() {
                   </button>
                   <button type="button" className="secondary" onClick={() => void onRemove(u.id)}>
                     הסרה
+                  </button>
+                  <button type="button" className="secondary" onClick={() => void onBan(u.id)}>
+                    חסימה
                   </button>
                 </td>
               </tr>

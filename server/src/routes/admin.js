@@ -5,6 +5,7 @@ import {
   extendUserAccess,
   listLocationTrail,
   listUsers,
+  permanentlyRemoveAndBanUser,
   softDeleteUser,
 } from '../services/adminUsers.js';
 import { closeDistressCall, listDistressCalls } from '../services/adminDistress.js';
@@ -47,6 +48,18 @@ adminRouter.post('/users', async (req, res, next) => {
 adminRouter.delete('/users/:id', async (req, res, next) => {
   try {
     const result = await softDeleteUser(req.params.id, req.adminUser.id);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+adminRouter.post('/users/:id/ban', async (req, res, next) => {
+  try {
+    const reason = req.body?.reason;
+    const result = await permanentlyRemoveAndBanUser(req.params.id, req.adminUser.id, {
+      reason,
+    });
     res.json(result);
   } catch (err) {
     next(err);
