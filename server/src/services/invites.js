@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto';
 import { isPhoneBanned } from '../lib/bans.js';
+import { normalizeToE164 } from '../lib/phone.js';
 import { getSupabaseAdmin } from '../lib/supabase.js';
 import { expiresAtForRole, getConfig } from '../config.js';
 import { sendInviteWhatsApp } from './whatsapp.js';
@@ -7,15 +8,21 @@ import { sendInviteWhatsApp } from './whatsapp.js';
 /**
  * Creates auth.users + public.users with a fresh invite token.
  * Used by seed helper scripts and Phase D admin user management.
+ * Phone is normalized to E.164 before ban-check, lookup, and storage.
  */
 export async function createInvitedUser({
   name,
-  phone,
+  phone: rawPhone,
   role = 'guest',
   sendWhatsApp = true,
 }) {
   if (!['guest', 'staff', 'admin'].includes(role)) {
     throw Object.assign(new Error('Invalid role'), { status: 400 });
+  }
+
+  const phone = normalizeToE164(rawPhone);
+  if (!phone || !/^\+\d{8,15}$/.test(phone)) {
+    throw Object.assign(new Error('Invalid phone number'), { status: 400 });
   }
 
   if (await isPhoneBanned(phone)) {
@@ -116,5 +123,6 @@ export async function createInvitedUser({
     inviteUrl,
     inviteExpiresAt,
     whatsapp,
+    phone,
   };
 }
