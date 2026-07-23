@@ -28,6 +28,8 @@ Informal list of future improvements and UX polish items. Not committed to a pha
 
 1. **Emergency phone number not editable via admin UI** — The top "חירום - לחצו להתקשר" bar reads its number from app_config.emergency_phone, but there's currently no admin UI to change it — it can only be updated via direct SQL. Consider adding a simple Settings/Config tab (or a field within an existing tab) so admins can update this number without developer/DB access. Note this is a different number from the Duty Officer contact (used for WhatsApp distress alerts) — both should probably be editable from the same place for clarity.
 
+2. **Activity log shows "logout" for ban/remove actions** — When an admin bans or removes a user, the activity log event type is 'logout' (with metadata.via: 'admin_permanent_ban' or 'admin_remove' correctly recorded), but the log's visible label just says "logout," which reads like a routine sign-out rather than an admin action. Fix should likely be display-layer only — read metadata.via and show a clearer label (e.g. "נחסם ע"י מנהל" / "הוסר ע"י מנהל") — without changing the underlying event_type or touching the ban/remove service logic.
+
 ## Future / v3 (from Nir's feedback session, July 2026)
 
 See also: [SMS_SELFREG_BRIEF.md](./SMS_SELFREG_BRIEF.md) for the full scoping on SMS/self-registration.
