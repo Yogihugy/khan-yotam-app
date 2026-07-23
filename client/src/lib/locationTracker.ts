@@ -17,8 +17,10 @@ type TrackerOptions = {
 };
 
 /**
- * Smart GPS watcher: upsert live_locations when moved >10m or every 2 min;
- * insert location_history every 5 min or on significant move.
+ * Smart GPS watcher: upsert live_locations on move >10m or every HEARTBEAT_MS
+ * (timer republishes last-known coords so stationary sessions stay fresh).
+ * location_history: significant move or every 5 min from real GPS callbacks only —
+ * timer heartbeats do not insert history rows.
  */
 export function startLocationTracker(opts: TrackerOptions): () => void {
   const { userId, enabled, onPosition, onStatus } = opts;
@@ -32,6 +34,8 @@ export function startLocationTracker(opts: TrackerOptions): () => void {
   let lastSentAt = 0;
   let lastHistory: LatLng | null = null;
   let lastHistoryAt = 0;
+  let lastKnownPos: LatLng | null = null;
+  let lastKnownAccuracy: number | null = null;
   let stopped = false;
   let watchId: number | null = null;
   let inflight = false;
@@ -41,7 +45,13 @@ export function startLocationTracker(opts: TrackerOptions): () => void {
     else onStatus?.('error', err.message);
   }
 
-  async function publish(pos: LatLng, accuracy: number | null, forceHistory: boolean) {
+  async function publish(
+    pos: LatLng,
+    accuracy: number | null,
+    forceHistory: boolean,
+    /** Timer heartbeat: refresh live + user timestamps only — no history row. */
+    skipHistory = false,
+  ) {
     if (stopped || inflight) return;
     inflight = true;
     const supabase = getSupabase();
@@ -69,20 +79,22 @@ export function startLocationTracker(opts: TrackerOptions): () => void {
         .eq('id', userId);
       if (userError) throw userError;
 
-      const movedFar =
-        !lastHistory || distanceMeters(lastHistory, pos) >= MOVE_THRESHOLD_M;
-      const historyDue = !lastHistoryAt || now - lastHistoryAt >= HISTORY_INTERVAL_MS;
-      if (forceHistory || movedFar || historyDue) {
-        const { error: histError } = await supabase.from('location_history').insert({
-          user_id: userId,
-          lat: pos.lat,
-          lng: pos.lng,
-          accuracy,
-          recorded_at: new Date(now).toISOString(),
-        });
-        if (histError) throw histError;
-        lastHistory = pos;
-        lastHistoryAt = now;
+      if (!skipHistory) {
+        const movedFar =
+          !lastHistory || distanceMeters(lastHistory, pos) >= MOVE_THRESHOLD_M;
+        const historyDue = !lastHistoryAt || now - lastHistoryAt >= HISTORY_INTERVAL_MS;
+        if (forceHistory || movedFar || historyDue) {
+          const { error: histError } = await supabase.from('location_history').insert({
+            user_id: userId,
+            lat: pos.lat,
+            lng: pos.lng,
+            accuracy,
+            recorded_at: new Date(now).toISOString(),
+          });
+          if (histError) throw histError;
+          lastHistory = pos;
+          lastHistoryAt = now;
+        }
       }
 
       lastSent = pos;
@@ -98,6 +110,8 @@ export function startLocationTracker(opts: TrackerOptions): () => void {
   function handlePosition(coords: GeolocationCoordinates) {
     const pos = { lat: coords.latitude, lng: coords.longitude };
     const accuracy = typeof coords.accuracy === 'number' ? coords.accuracy : null;
+    lastKnownPos = pos;
+    lastKnownAccuracy = accuracy;
     onPosition?.({ ...pos, accuracy });
 
     const now = Date.now();
@@ -135,6 +149,8 @@ export function startLocationTracker(opts: TrackerOptions): () => void {
         };
         const accuracy =
           typeof result.coords.accuracy === 'number' ? result.coords.accuracy : null;
+        lastKnownPos = pos;
+        lastKnownAccuracy = accuracy;
         onPosition?.({ ...pos, accuracy });
         void publish(pos, accuracy, true);
       },
@@ -153,12 +169,20 @@ export function startLocationTracker(opts: TrackerOptions): () => void {
     }
   }
 
+  function tickHeartbeat() {
+    if (stopped || !lastKnownPos) return;
+    if (Date.now() - lastSentAt < HEARTBEAT_MS) return;
+    void publish(lastKnownPos, lastKnownAccuracy, false, true);
+  }
+
   onStatus?.('watching');
   startWatch();
+  const heartbeatId = window.setInterval(tickHeartbeat, HEARTBEAT_MS);
   document.addEventListener('visibilitychange', handleVisibilityChange);
 
   return () => {
     stopped = true;
+    window.clearInterval(heartbeatId);
     document.removeEventListener('visibilitychange', handleVisibilityChange);
     if (watchId != null) navigator.geolocation.clearWatch(watchId);
   };

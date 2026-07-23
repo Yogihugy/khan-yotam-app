@@ -1,4 +1,5 @@
 export const MOVE_THRESHOLD_M = 10;
+/** How often live_locations / last_location_at are refreshed while the map tracker is open (timer + watch). */
 export const HEARTBEAT_MS = 2 * 60 * 1000;
 export const HISTORY_INTERVAL_MS = 5 * 60 * 1000;
 export const FRESH_MS = 10 * 60 * 1000;
