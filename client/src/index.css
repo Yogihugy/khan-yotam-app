@@ -748,6 +748,32 @@ code {
   background: rgba(192, 57, 43, 0.12);
 }
 
+.denied-box-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.map-denied-overlay {
+  position: absolute;
+  inset-inline: 0.75rem;
+  bottom: 5.5rem;
+  z-index: 600;
+  pointer-events: none;
+  max-width: min(26rem, calc(100% - 1.5rem));
+  margin-inline: auto;
+  inset-inline-start: 0.75rem;
+  inset-inline-end: 0.75rem;
+}
+
+.map-denied-overlay .denied-box,
+.map-denied-help {
+  pointer-events: auto;
+  max-height: min(50vh, 22rem);
+  overflow: auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
 .modal-backdrop {
   position: fixed;
   inset: 0;

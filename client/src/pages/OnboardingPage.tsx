@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { EmergencyBanner } from '../components/EmergencyBanner';
+import { LocationDeniedHelp } from '../components/LocationDeniedHelp';
 import { appConfig } from '../lib/config';
-import { requestLocationPermission } from '../lib/locationTracker';
 import {
   hasCompletedOnboarding,
   markOnboardingComplete,
@@ -51,14 +51,6 @@ export function OnboardingPage() {
     );
   }
 
-  async function openSettingsHint() {
-    const state = await requestLocationPermission();
-    if (state === 'denied') {
-      setDenied(true);
-      setError('יש לאפשר מיקום בהגדרות הדפדפן/המכשיר ולאחר מכן לנסות שוב.');
-    }
-  }
-
   return (
     <main className="page">
       <div className="panel onboarding-panel">
@@ -77,19 +69,12 @@ export function OnboardingPage() {
 
         <EmergencyBanner />
 
-        {denied && (
-          <div className="denied-box">
-            <p className="error">בלי הרשאת מיקום אי אפשר להשתמש במפה.</p>
-            <button type="button" className="secondary" onClick={() => void openSettingsHint()}>
-              פתיחת הגדרות / ניסיון חוזר
-            </button>
-          </div>
-        )}
+        {denied && <LocationDeniedHelp busy={busy} onRetry={() => void continueToApp()} />}
 
         {error && <p className="error">{error}</p>}
 
         <button type="button" className="primary" disabled={busy} onClick={() => void continueToApp()}>
-          {busy ? 'מבקשים מיקום…' : 'הבנתי, בואו נצא לדרך'}
+          {busy ? 'מבקשים מיקום…' : denied ? 'ניסיון חוזר' : 'הבנתי, בואו נצא לדרך'}
         </button>
       </div>
     </main>

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DistressButton } from '../components/DistressButton';
+import { LocationDeniedHelp } from '../components/LocationDeniedHelp';
 import { MapView } from '../components/MapView';
 import {
   buildMarkers,
@@ -30,6 +31,9 @@ export function MapPage({ user }: Props) {
   const [myLocation, setMyLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [trackerStatus, setTrackerStatus] = useState<TrackerStatus>('idle');
   const [error, setError] = useState<string | null>(null);
+  const [trackerKey, setTrackerKey] = useState(0);
+  const [deniedHelpDismissed, setDeniedHelpDismissed] = useState(false);
+  const [retryBusy, setRetryBusy] = useState(false);
 
   const isAdmin = user.role === 'admin';
 
@@ -150,11 +154,24 @@ export function MapPage({ user }: Props) {
       onStatus: (status, detail) => {
         setTrackerStatus(status);
         if (status === 'error' && detail) setError(detail);
-        if (status === 'denied') setError('הרשאת מיקום נדחתה — אפשר לאפשר בהגדרות ולרענן.');
+        if (status === 'denied' || status === 'watching') {
+          setRetryBusy(false);
+        }
+        // After a successful fix, allow the help overlay to show again on a future deny.
+        if (status === 'watching') {
+          setDeniedHelpDismissed(false);
+        }
       },
     });
     return stop;
-  }, [user.id]);
+  }, [user.id, trackerKey]);
+
+  function retryLocation() {
+    setRetryBusy(true);
+    setDeniedHelpDismissed(false);
+    setError(null);
+    setTrackerKey((k) => k + 1);
+  }
 
   const markers = useMemo(
     () =>
@@ -225,6 +242,8 @@ export function MapPage({ user }: Props) {
     });
   }, [markersWithSelfGps, myLocation]);
 
+  const showDeniedHelp = trackerStatus === 'denied' && !deniedHelpDismissed;
+
   return (
     <section className={`map-page${online ? '' : ' is-offline'}`}>
       <MapView
@@ -237,8 +256,18 @@ export function MapPage({ user }: Props) {
         {trackerStatus === 'denied' && <span className="hud-pill danger">אין GPS</span>}
         {user.status === 'quiet' && <span className="hud-pill quiet">מצב שקט</span>}
         {!online && <span className="hud-pill danger">אופליין</span>}
-        {error && <span className="hud-pill danger">{error}</span>}
+        {error && trackerStatus !== 'denied' && <span className="hud-pill danger">{error}</span>}
       </div>
+      {showDeniedHelp && (
+        <div className="map-denied-overlay" role="dialog" aria-label="הרשאת מיקום נדחתה">
+          <LocationDeniedHelp
+            className="map-denied-help"
+            busy={retryBusy}
+            onRetry={retryLocation}
+            onDismiss={() => setDeniedHelpDismissed(true)}
+          />
+        </div>
+      )}
       <DistressButton lat={myLocation?.lat ?? null} lng={myLocation?.lng ?? null} />
     </section>
   );
