@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { getSupabaseAdmin } from '../lib/supabase.js';
+import { requestOtp } from '../services/otp.js';
 import { createSessionForUser } from '../services/session.js';
 
 export const authRouter = Router();
@@ -20,6 +21,20 @@ const ALLOWED_TRAVELER_TYPES = new Set(['hiker', 'cyclist', 'staff', 'other']);
 function profileComplete(user) {
   return Boolean(user?.traveler_type && user?.name && user?.color);
 }
+
+/**
+ * POST /auth/register/request-otp
+ * Body: { phone }
+ * Always returns { ok: true } on success / banned (no leak). Rate limit → 429.
+ */
+authRouter.post('/register/request-otp', async (req, res, next) => {
+  try {
+    const result = await requestOtp(req.body?.phone);
+    return res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
 
 /**
  * POST /auth/verify-invite
