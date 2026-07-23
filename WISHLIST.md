@@ -22,6 +22,8 @@ Informal list of future improvements and UX polish items. Not committed to a pha
 
 3. **No self-service re-login after Disconnect** — Once a user taps "התנתקות" (Disconnect), their only way back in is an admin re-sending an invite via "הוספה + הזמנה" with their existing phone number (this does work today — it regenerates invite_token on their existing row — but there's no user-facing way to trigger it themselves, and no visible guidance telling them this is what's needed). Worth considering either a lightweight self-service re-request flow, or at minimum a clearer in-app message when someone lands on an expired/invalid invite explaining that they need to contact Chan Yotam for a new link (which the Expired Access screen partially does, but the "Invalid or used invite token" error on a stale link doesn't).
 
+4. **Revisit /register OTP screen UI** — countdown display too large/visually dominant, confusing UX; resend button also needs review (specifics TBD on next design pass). Parked until self-registration flow is closer to going fully live.
+
 ## Admin / Configuration
 
 1. **Emergency phone number not editable via admin UI** — The top "חירום - לחצו להתקשר" bar reads its number from app_config.emergency_phone, but there's currently no admin UI to change it — it can only be updated via direct SQL. Consider adding a simple Settings/Config tab (or a field within an existing tab) so admins can update this number without developer/DB access. Note this is a different number from the Duty Officer contact (used for WhatsApp distress alerts) — both should probably be editable from the same place for clarity.
