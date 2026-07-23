@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto';
+import { isPhoneBanned } from '../lib/bans.js';
 import { getSupabaseAdmin } from '../lib/supabase.js';
 import { expiresAtForRole, getConfig } from '../config.js';
 import { sendInviteWhatsApp } from './whatsapp.js';
@@ -15,6 +16,13 @@ export async function createInvitedUser({
 }) {
   if (!['guest', 'staff', 'admin'].includes(role)) {
     throw Object.assign(new Error('Invalid role'), { status: 400 });
+  }
+
+  if (await isPhoneBanned(phone)) {
+    throw Object.assign(
+      new Error('This phone number is banned and cannot be invited'),
+      { status: 403 },
+    );
   }
 
   const supabase = getSupabaseAdmin();
