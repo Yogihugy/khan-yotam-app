@@ -41,6 +41,7 @@ export async function createInvitedUser({
     .select('id')
     .eq('phone', phone)
     .eq('is_deleted', false)
+    .eq('permanently_removed', false)
     .maybeSingle();
 
   if (existingError) {
@@ -95,6 +96,7 @@ export async function createInvitedUser({
       invite_token: inviteToken,
       invite_expires_at: inviteExpiresAt,
       is_deleted: false,
+      permanently_removed: false,
     };
 
     const { error: insertError } = await supabase.from('users').insert(row);

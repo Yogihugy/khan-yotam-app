@@ -46,6 +46,7 @@ export async function createAuthPublicGuest({ phone, name = PLACEHOLDER_NAME }) 
     invite_token: null,
     invite_expires_at: null,
     is_deleted: false,
+    permanently_removed: false,
   };
 
   const { data: inserted, error: insertError } = await supabase
@@ -77,6 +78,7 @@ export async function ensureSelfRegUser(phone) {
     .from('users')
     .select('*')
     .eq('phone', e164)
+    .eq('permanently_removed', false)
     .maybeSingle();
 
   if (error) {
