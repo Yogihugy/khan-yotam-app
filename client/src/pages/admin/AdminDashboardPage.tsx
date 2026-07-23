@@ -33,7 +33,7 @@ export function AdminDashboardPage({ user }: Props) {
       <main className="page">
         <div className="panel">
           <h1>אין הרשאה</h1>
-          <p className="muted">לוח ChaML זמין למנהלים בלבד.</p>
+          <p className="muted">לוח חמ"ל זמין למנהלים בלבד.</p>
           <Link to="/">חזרה למפה</Link>
         </div>
       </main>
@@ -44,7 +44,7 @@ export function AdminDashboardPage({ user }: Props) {
     <div className="admin-dashboard">
       <header className="admin-header">
         <div>
-          <p className="brand">ChaML · חאן יותם</p>
+          <p className="brand">חמ"ל · חאן יותם</p>
           <h1>לוח ניהול</h1>
         </div>
         <Link className="secondary" to="/">
