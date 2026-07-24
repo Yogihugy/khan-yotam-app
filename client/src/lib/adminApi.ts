@@ -35,6 +35,7 @@ export type AdminUserRow = {
   expires_at: string | null;
   is_deleted: boolean;
   permanently_removed: boolean;
+  is_banned: boolean;
 };
 
 export type DistressCallRow = {

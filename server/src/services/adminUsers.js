@@ -22,7 +22,7 @@ export async function listUsers({ lifecycle = 'active' } = {}) {
       .order('created_at', { ascending: false });
 
     if (error) throw Object.assign(new Error(error.message), { status: 500 });
-    return data || [];
+    return (data || []).map((u) => ({ ...u, is_banned: true }));
   }
 
   let query = supabase.from('users').select(selectCols).order('created_at', { ascending: false });
@@ -37,7 +37,12 @@ export async function listUsers({ lifecycle = 'active' } = {}) {
 
   const { data, error } = await query;
   if (error) throw Object.assign(new Error(error.message), { status: 500 });
-  return data || [];
+
+  const { data: banRows, error: banError } = await supabase.from('banned_phones').select('phone');
+  if (banError) throw Object.assign(new Error(banError.message), { status: 500 });
+  const bannedSet = new Set((banRows || []).map((r) => r.phone));
+
+  return (data || []).map((u) => ({ ...u, is_banned: bannedSet.has(u.phone) }));
 }
 
 export async function addUser({ name, phone, role }) {

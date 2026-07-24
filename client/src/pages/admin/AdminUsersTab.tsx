@@ -134,7 +134,7 @@ export function AdminUsersTab() {
   }
 
   function rowActions(u: AdminUserRow) {
-    if (u.permanently_removed) {
+    if (u.is_banned) {
       return (
         <button type="button" className="secondary" onClick={() => void onUnban(u.phone)}>
           ביטול חסימה
