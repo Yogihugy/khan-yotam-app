@@ -1,41 +1,68 @@
+import { useState } from 'react';
+import {
+  detectLocationHelpBrowser,
+  type LocationHelpBrowser,
+} from '../lib/locationHelpBrowser';
+
 type Props = {
-  onRetry: () => void;
-  busy?: boolean;
   onDismiss?: () => void;
   className?: string;
 };
 
-export function LocationDeniedHelp({ onRetry, busy = false, onDismiss, className }: Props) {
+function LocationHelpCopy({ kind }: { kind: LocationHelpBrowser }) {
+  switch (kind) {
+    case 'safari-ios':
+      return (
+        <>
+          <p>
+            פתחו את הגדרות (Settings) באייפון ← Apps (אם קיים) ← Safari ← Settings for Websites ←
+            Location ← מצאו את האתר ובחרו Allow.
+          </p>
+          <p>אם לא רואים &quot;Apps&quot;: חפשו Safari ישירות בהגדרות.</p>
+          <p>אחרי שאישרתם, חזרו לכאן ורעננו את הדף.</p>
+        </>
+      );
+    case 'chrome-ios':
+      return (
+        <>
+          <p>
+            פתחו את הגדרות (Settings) באייפון ← גללו למטה ומצאו Chrome ← Location ← בחרו While Using
+            the App.
+          </p>
+          <p>אחרי שאישרתם, חזרו לכאן ורעננו את הדף.</p>
+        </>
+      );
+    case 'chrome-android':
+      return (
+        <>
+          <p>לחצו על שלוש הנקודות (⋮) בדפדפן ← הגדרות אתר ← מיקום ← אפשר.</p>
+          <p>אחרי שאישרתם, חזרו לכאן ורעננו את הדף.</p>
+        </>
+      );
+    case 'other':
+      return (
+        <>
+          <p>בדקו את הגדרות המיקום של הדפדפן שלכם עבור האתר הזה, ואשרו גישה למיקום.</p>
+          <p>אחרי שאישרתם, חזרו לכאן ורעננו את הדף.</p>
+        </>
+      );
+  }
+}
+
+export function LocationDeniedHelp({ onDismiss, className }: Props) {
+  const [kind] = useState(() => detectLocationHelpBrowser());
+
   return (
     <div className={className ? `denied-box ${className}` : 'denied-box'}>
       <p className="error">בלי הרשאת מיקום אי אפשר להשתמש במפה.</p>
-      <p>
-        באייפון / Safari לא ניתן לפתוח את ההגדרות מתוך האפליקציה. אחרי שדחיתם הרשאה פעם אחת, צריך
-        לאפשר אותה ידנית ואז לנסות שוב:
-      </p>
-      <ol className="onboarding-list">
-        <li>
-          בספארי: לחצו על סמל <strong>aA</strong> בשורת הכתובת ←{' '}
-          <strong>Website Settings</strong> / הגדרות אתר ← <strong>Location</strong> / מיקום ← בחרו{' '}
-          <strong>Allow</strong> / אפשר.
-        </li>
-        <li>
-          אם האפשרות לא מופיעה: הגדרות האייפון ← <strong>Privacy &amp; Security</strong> / פרטיות
-          ואבטחה ← <strong>Location Services</strong> / שירותי מיקום ← ודאו ששירותי מיקום דלוקים ←{' '}
-          <strong>Safari Websites</strong> ← הגדירו ל־<strong>Ask</strong> או{' '}
-          <strong>While Using the App</strong>.
-        </li>
-      </ol>
-      <div className="denied-box-actions">
-        <button type="button" className="secondary" disabled={busy} onClick={onRetry}>
-          {busy ? 'מבקשים מיקום…' : 'ניסיון חוזר'}
-        </button>
-        {onDismiss && (
+      <LocationHelpCopy kind={kind} />
+      {onDismiss && (
+        <div className="denied-box-actions">
           <button type="button" className="secondary" onClick={onDismiss}>
             סגור
           </button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

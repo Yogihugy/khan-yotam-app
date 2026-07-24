@@ -77,7 +77,7 @@ export function OnboardingPage() {
 
         <EmergencyBanner />
 
-        {denied && <LocationDeniedHelp busy={busy} onRetry={() => void continueToApp()} />}
+        {denied && <LocationDeniedHelp />}
 
         {error && <p className="error">{error}</p>}
 

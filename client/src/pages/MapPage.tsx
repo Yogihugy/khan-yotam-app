@@ -31,9 +31,7 @@ export function MapPage({ user }: Props) {
   const [myLocation, setMyLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [trackerStatus, setTrackerStatus] = useState<TrackerStatus>('idle');
   const [error, setError] = useState<string | null>(null);
-  const [trackerKey, setTrackerKey] = useState(0);
   const [deniedHelpDismissed, setDeniedHelpDismissed] = useState(false);
-  const [retryBusy, setRetryBusy] = useState(false);
 
   const isAdmin = user.role === 'admin';
 
@@ -154,9 +152,6 @@ export function MapPage({ user }: Props) {
       onStatus: (status, detail) => {
         setTrackerStatus(status);
         if (status === 'error' && detail) setError(detail);
-        if (status === 'denied' || status === 'watching') {
-          setRetryBusy(false);
-        }
         // After a successful fix, allow the help overlay to show again on a future deny.
         if (status === 'watching') {
           setDeniedHelpDismissed(false);
@@ -164,14 +159,7 @@ export function MapPage({ user }: Props) {
       },
     });
     return stop;
-  }, [user.id, trackerKey]);
-
-  function retryLocation() {
-    setRetryBusy(true);
-    setDeniedHelpDismissed(false);
-    setError(null);
-    setTrackerKey((k) => k + 1);
-  }
+  }, [user.id]);
 
   const markers = useMemo(
     () =>
@@ -262,8 +250,6 @@ export function MapPage({ user }: Props) {
         <div className="map-denied-overlay" role="dialog" aria-label="הרשאת מיקום נדחתה">
           <LocationDeniedHelp
             className="map-denied-help"
-            busy={retryBusy}
-            onRetry={retryLocation}
             onDismiss={() => setDeniedHelpDismissed(true)}
           />
         </div>
