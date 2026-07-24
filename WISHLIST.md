@@ -24,6 +24,8 @@ Informal list of future improvements and UX polish items. Not committed to a pha
 
 4. **Revisit /register OTP screen UI** — countdown display too large/visually dominant, confusing UX; resend button also needs review (specifics TBD on next design pass). Parked until self-registration flow is closer to going fully live.
 
+5. **Two paths for self-registration discovery** — (1) Drafted a brief and visual mockup for a new section/page on the Chan Yotam Wix site (yotamwaysideinn.org) linking to /register, same-tab, for self-service sign-up. Pending: confirming who has Wix edit access (via Nir), and coordinating who builds it. (2) Direct link — the /register URL can also be sent standalone (SMS, WhatsApp, etc.) without going through the Wix site at all, landing straight on the phone-entry screen. Both paths lead to the same flow. Neither should go live/be sent until real SMS (Twilio) is active — otherwise visitors hit a dead end waiting for a verification code that never arrives.
+
 ## Admin / Configuration
 
 1. **Emergency phone number not editable via admin UI** — The top "חירום - לחצו להתקשר" bar reads its number from app_config.emergency_phone, but there's currently no admin UI to change it — it can only be updated via direct SQL. Consider adding a simple Settings/Config tab (or a field within an existing tab) so admins can update this number without developer/DB access. Note this is a different number from the Duty Officer contact (used for WhatsApp distress alerts) — both should probably be editable from the same place for clarity.
