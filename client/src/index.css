@@ -779,7 +779,8 @@ code {
   gap: 0.6rem;
   padding: 0.75rem;
   border: 1px solid rgba(192, 57, 43, 0.45);
-  background: rgba(192, 57, 43, 0.12);
+  background: #123442;
+  color: var(--foam);
 }
 
 .denied-box-actions {
