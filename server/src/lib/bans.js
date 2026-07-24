@@ -40,6 +40,7 @@ export async function listBannedPhones() {
 
 /**
  * Removes the ban row only. Does not clear permanently_removed on any user.
+ * Idempotent: missing ban row still returns { ok: true }.
  */
 export async function unbanPhone(phone) {
   const normalized = normalizeToE164(phone);
@@ -48,18 +49,10 @@ export async function unbanPhone(phone) {
   }
 
   const supabase = getSupabaseAdmin();
-  const { data, error } = await supabase
-    .from('banned_phones')
-    .delete()
-    .eq('phone', normalized)
-    .select('phone')
-    .maybeSingle();
+  const { error } = await supabase.from('banned_phones').delete().eq('phone', normalized);
 
   if (error) {
     throw Object.assign(new Error(error.message), { status: 500 });
-  }
-  if (!data) {
-    throw Object.assign(new Error('Ban not found'), { status: 404 });
   }
 
   return { ok: true };

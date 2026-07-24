@@ -5,19 +5,32 @@ import { getSupabaseAdmin } from '../lib/supabase.js';
 
 export async function listUsers({ lifecycle = 'active' } = {}) {
   const supabase = getSupabaseAdmin();
-  let query = supabase
-    .from('users')
-    .select(
-      'id, name, phone, role, traveler_type, status, color, last_seen_at, last_location_at, created_at, expires_at, is_deleted, permanently_removed',
-    )
-    .order('created_at', { ascending: false });
+  const selectCols =
+    'id, name, phone, role, traveler_type, status, color, last_seen_at, last_location_at, created_at, expires_at, is_deleted, permanently_removed';
+
+  if (lifecycle === 'banned') {
+    const { data: banRows, error: banError } = await supabase.from('banned_phones').select('phone');
+    if (banError) throw Object.assign(new Error(banError.message), { status: 500 });
+
+    const phones = (banRows || []).map((r) => r.phone).filter(Boolean);
+    if (phones.length === 0) return [];
+
+    const { data, error } = await supabase
+      .from('users')
+      .select(selectCols)
+      .in('phone', phones)
+      .order('created_at', { ascending: false });
+
+    if (error) throw Object.assign(new Error(error.message), { status: 500 });
+    return data || [];
+  }
+
+  let query = supabase.from('users').select(selectCols).order('created_at', { ascending: false });
 
   if (lifecycle === 'active') {
     query = query.eq('is_deleted', false);
   } else if (lifecycle === 'removed') {
     query = query.eq('is_deleted', true).eq('permanently_removed', false);
-  } else if (lifecycle === 'banned') {
-    query = query.eq('permanently_removed', true);
   } else if (lifecycle !== 'all') {
     throw Object.assign(new Error('lifecycle must be active|removed|banned|all'), { status: 400 });
   }
