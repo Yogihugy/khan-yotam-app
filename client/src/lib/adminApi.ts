@@ -34,6 +34,7 @@ export type AdminUserRow = {
   created_at: string | null;
   expires_at: string | null;
   is_deleted: boolean;
+  permanently_removed: boolean;
 };
 
 export type DistressCallRow = {
@@ -86,7 +87,8 @@ export type PoiAdmin = {
 };
 
 export const adminApi = {
-  listUsers: () => adminFetch<{ users: AdminUserRow[] }>('/users'),
+  listUsers: (lifecycle: 'active' | 'removed' | 'banned' | 'all' = 'active') =>
+    adminFetch<{ users: AdminUserRow[] }>(`/users?lifecycle=${lifecycle}`),
   addUser: (body: { name: string; phone: string; role: string }) =>
     adminFetch<{ userId: string; inviteUrl: string; inviteToken: string }>('/users', {
       method: 'POST',

@@ -20,9 +20,10 @@ const DUTY_ID = '00000000-0000-0000-0000-000000000001';
 const POI_TYPES = new Set(['khan', 'parking', 'water', 'warning', 'other']);
 
 // —— Users ——
-adminRouter.get('/users', async (_req, res, next) => {
+adminRouter.get('/users', async (req, res, next) => {
   try {
-    const users = await listUsers({ includeDeleted: false });
+    const lifecycle = req.query.lifecycle != null ? String(req.query.lifecycle) : 'active';
+    const users = await listUsers({ lifecycle });
     res.json({ users });
   } catch (err) {
     next(err);

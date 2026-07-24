@@ -3,17 +3,23 @@ import { expiresAtForRole } from '../config.js';
 import { normalizeToE164 } from '../lib/phone.js';
 import { getSupabaseAdmin } from '../lib/supabase.js';
 
-export async function listUsers({ includeDeleted = false } = {}) {
+export async function listUsers({ lifecycle = 'active' } = {}) {
   const supabase = getSupabaseAdmin();
   let query = supabase
     .from('users')
     .select(
-      'id, name, phone, role, traveler_type, status, color, last_seen_at, last_location_at, created_at, expires_at, is_deleted',
+      'id, name, phone, role, traveler_type, status, color, last_seen_at, last_location_at, created_at, expires_at, is_deleted, permanently_removed',
     )
     .order('created_at', { ascending: false });
 
-  if (!includeDeleted) {
+  if (lifecycle === 'active') {
     query = query.eq('is_deleted', false);
+  } else if (lifecycle === 'removed') {
+    query = query.eq('is_deleted', true).eq('permanently_removed', false);
+  } else if (lifecycle === 'banned') {
+    query = query.eq('permanently_removed', true);
+  } else if (lifecycle !== 'all') {
+    throw Object.assign(new Error('lifecycle must be active|removed|banned|all'), { status: 400 });
   }
 
   const { data, error } = await query;

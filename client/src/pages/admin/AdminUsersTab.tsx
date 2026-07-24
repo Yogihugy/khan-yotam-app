@@ -1,8 +1,30 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { adminApi, type AdminUserRow } from '../../lib/adminApi';
+
+type Lifecycle = 'active' | 'removed' | 'banned' | 'all';
+type SortKey = 'name' | 'expires_at';
+type SortDir = 'asc' | 'desc';
+
+function isExpired(expiresAt: string | null): boolean {
+  return Boolean(expiresAt && new Date(expiresAt).getTime() < Date.now());
+}
+
+function compareUsers(a: AdminUserRow, b: AdminUserRow, key: SortKey, dir: SortDir): number {
+  const mul = dir === 'asc' ? 1 : -1;
+  if (key === 'name') {
+    return mul * a.name.localeCompare(b.name, 'he');
+  }
+  const aTime = a.expires_at ? new Date(a.expires_at).getTime() : Number.POSITIVE_INFINITY;
+  const bTime = b.expires_at ? new Date(b.expires_at).getTime() : Number.POSITIVE_INFINITY;
+  if (aTime === bTime) return 0;
+  return mul * (aTime < bTime ? -1 : 1);
+}
 
 export function AdminUsersTab() {
   const [users, setUsers] = useState<AdminUserRow[]>([]);
+  const [lifecycle, setLifecycle] = useState<Lifecycle>('active');
+  const [sortKey, setSortKey] = useState<SortKey>('name');
+  const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [role, setRole] = useState<'guest' | 'staff' | 'admin'>('guest');
@@ -10,16 +32,36 @@ export function AdminUsersTab() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const refresh = async () => {
-    const { users: rows } = await adminApi.listUsers();
+  const refresh = async (nextLifecycle: Lifecycle = lifecycle) => {
+    const { users: rows } = await adminApi.listUsers(nextLifecycle);
     setUsers(rows);
   };
 
   useEffect(() => {
-    void refresh().catch((err) =>
+    void refresh(lifecycle).catch((err) =>
       setError(err instanceof Error ? err.message : 'שגיאה בטעינת משתמשים'),
     );
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lifecycle]);
+
+  const sortedUsers = useMemo(
+    () => [...users].sort((a, b) => compareUsers(a, b, sortKey, sortDir)),
+    [users, sortKey, sortDir],
+  );
+
+  function toggleSort(key: SortKey) {
+    if (sortKey === key) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortKey(key);
+      setSortDir('asc');
+    }
+  }
+
+  function sortIndicator(key: SortKey) {
+    if (sortKey !== key) return '';
+    return sortDir === 'asc' ? ' ▲' : ' ▼';
+  }
 
   async function onAdd(e: FormEvent) {
     e.preventDefault();
@@ -52,7 +94,7 @@ export function AdminUsersTab() {
   async function onBan(id: string) {
     if (
       !window.confirm(
-        'לחסום את מספר הטלפון של משתמש זה?\n\nהמשתמש יוסר, והמספר ייחסם מהרשמה מחדש (שונה מהסרה רגילה). ניתן לבטל את החסימה מאוחר יותר מרשימת החסימות.',
+        'לחסום את מספר הטלפון של משתמש זה?\n\nהמשתמש יוסר, והמספר ייחסם מהרשמה מחדש (שונה מהסרה רגילה). ניתן לבטל את החסימה מאוחר יותר דרך סינון "חסומים" בטבלת המשתמשים.',
       )
     ) {
       return;
@@ -65,6 +107,23 @@ export function AdminUsersTab() {
     }
   }
 
+  async function onUnban(phoneNumber: string) {
+    if (
+      !window.confirm(
+        'לבטל את החסימה למספר זה?\n\nהמספר יוכל להירשם מחדש. המשתמש הישן יישאר מוסר לצמיתות (לא יתחבר מחדש אוטומטית).',
+      )
+    ) {
+      return;
+    }
+    try {
+      await adminApi.unbanPhone(phoneNumber);
+      setError(null);
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'ביטול חסימה נכשל');
+    }
+  }
+
   async function onExtend(id: string) {
     try {
       await adminApi.extendUser(id);
@@ -72,6 +131,36 @@ export function AdminUsersTab() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'הארכה נכשלה');
     }
+  }
+
+  function rowActions(u: AdminUserRow) {
+    if (u.permanently_removed) {
+      return (
+        <button type="button" className="secondary" onClick={() => void onUnban(u.phone)}>
+          ביטול חסימה
+        </button>
+      );
+    }
+    if (u.is_deleted) {
+      return (
+        <button type="button" className="secondary" onClick={() => void onBan(u.id)}>
+          חסימה
+        </button>
+      );
+    }
+    return (
+      <>
+        <button type="button" className="secondary" onClick={() => void onExtend(u.id)}>
+          הארכה
+        </button>
+        <button type="button" className="secondary" onClick={() => void onRemove(u.id)}>
+          הסרה
+        </button>
+        <button type="button" className="secondary" onClick={() => void onBan(u.id)}>
+          חסימה
+        </button>
+      </>
+    );
   }
 
   return (
@@ -103,39 +192,73 @@ export function AdminUsersTab() {
           קישור הזמנה: <code>{inviteUrl}</code>
         </p>
       )}
+
+      <div className="admin-form-grid">
+        <label>
+          סטטוס משתמש
+          <select
+            value={lifecycle}
+            onChange={(e) => setLifecycle(e.target.value as Lifecycle)}
+          >
+            <option value="active">פעילים</option>
+            <option value="removed">הוסרו</option>
+            <option value="banned">חסומים</option>
+            <option value="all">הכל</option>
+          </select>
+        </label>
+      </div>
+
       {error && <p className="error">{error}</p>}
 
       <div className="admin-table-wrap">
         <table className="admin-table">
           <thead>
             <tr>
-              <th>שם</th>
+              <th>
+                <button
+                  type="button"
+                  className="admin-sort-btn"
+                  onClick={() => toggleSort('name')}
+                  aria-sort={
+                    sortKey === 'name' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'
+                  }
+                >
+                  שם{sortIndicator('name')}
+                </button>
+              </th>
               <th>טלפון</th>
               <th>תפקיד</th>
               <th>סטטוס</th>
-              <th>תוקף</th>
+              <th>
+                <button
+                  type="button"
+                  className="admin-sort-btn"
+                  onClick={() => toggleSort('expires_at')}
+                  aria-sort={
+                    sortKey === 'expires_at'
+                      ? sortDir === 'asc'
+                        ? 'ascending'
+                        : 'descending'
+                      : 'none'
+                  }
+                >
+                  תוקף{sortIndicator('expires_at')}
+                </button>
+              </th>
               <th>פעולות</th>
             </tr>
           </thead>
           <tbody>
-            {users.map((u) => (
+            {sortedUsers.map((u) => (
               <tr key={u.id}>
                 <td>{u.name}</td>
-                <td>{u.phone}</td>
+                <td dir="ltr">{u.phone}</td>
                 <td>{u.role}</td>
                 <td>{u.status}</td>
-                <td>{u.expires_at ? new Date(u.expires_at).toLocaleDateString('he-IL') : 'ללא'}</td>
-                <td className="admin-inline-actions">
-                  <button type="button" className="secondary" onClick={() => void onExtend(u.id)}>
-                    הארכה
-                  </button>
-                  <button type="button" className="secondary" onClick={() => void onRemove(u.id)}>
-                    הסרה
-                  </button>
-                  <button type="button" className="secondary" onClick={() => void onBan(u.id)}>
-                    חסימה
-                  </button>
+                <td className={isExpired(u.expires_at) ? 'admin-expired' : undefined}>
+                  {u.expires_at ? new Date(u.expires_at).toLocaleDateString('he-IL') : 'ללא'}
                 </td>
+                <td className="admin-inline-actions">{rowActions(u)}</td>
               </tr>
             ))}
           </tbody>

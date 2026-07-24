@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { PublicUser } from '../../lib/api';
 import { AdminActivityLogTab } from './AdminActivityLogTab';
-import { AdminBannedPhonesTab } from './AdminBannedPhonesTab';
 import { AdminDistressTab } from './AdminDistressTab';
 import { AdminDutyOfficerTab } from './AdminDutyOfficerTab';
 import { AdminMapTab } from './AdminMapTab';
@@ -14,7 +13,6 @@ const TABS = [
   { id: 'map', label: 'מפה מלאה' },
   { id: 'distress', label: 'קריאות מצוקה' },
   { id: 'users', label: 'משתמשים' },
-  { id: 'bans', label: 'חסימות' },
   { id: 'poi', label: 'נקודות עניין' },
   { id: 'protocol', label: 'פרוטוקול' },
   { id: 'duty', label: 'קצין תורן' },
@@ -71,7 +69,6 @@ export function AdminDashboardPage({ user }: Props) {
         {tab === 'map' && <AdminMapTab />}
         {tab === 'distress' && <AdminDistressTab />}
         {tab === 'users' && <AdminUsersTab />}
-        {tab === 'bans' && <AdminBannedPhonesTab />}
         {tab === 'poi' && <AdminPoiTab />}
         {tab === 'protocol' && <AdminProtocolTab />}
         {tab === 'duty' && <AdminDutyOfficerTab />}
