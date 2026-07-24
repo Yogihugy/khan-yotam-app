@@ -38,6 +38,7 @@ export function AdminUsersTab() {
   };
 
   useEffect(() => {
+    setInviteUrl(null);
     void refresh(lifecycle).catch((err) =>
       setError(err instanceof Error ? err.message : 'שגיאה בטעינת משתמשים'),
     );

@@ -10,6 +10,14 @@ function isProfileComplete(user: PublicUser): boolean {
   return Boolean(user.traveler_type && user.name && user.color);
 }
 
+function hebrewInviteError(err: unknown): string {
+  const raw = err instanceof Error ? err.message : '';
+  if (raw.includes('Invite has expired')) return 'פג תוקף קישור ההזמנה';
+  if (raw.includes('Invalid or used invite token')) return 'קישור הזמנה לא תקין או שכבר נוצל';
+  if (raw.includes('token is required')) return 'קישור הזמנה לא תקין';
+  return raw || 'שגיאה באימות ההזמנה';
+}
+
 export function InvitePage() {
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
@@ -54,7 +62,7 @@ export function InvitePage() {
           // Fall through to the verify error below.
         }
 
-        setError(err instanceof Error ? err.message : 'שגיאה באימות ההזמנה');
+        setError(hebrewInviteError(err));
       }
     }
 
