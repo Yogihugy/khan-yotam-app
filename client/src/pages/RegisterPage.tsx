@@ -6,6 +6,8 @@ import { continueAfterAuth } from '../lib/continueAfterAuth';
 import { setSessionFromTokens } from '../lib/supabase';
 
 const RESEND_COOLDOWN_SEC = 60;
+/** Hidden for now; set true to restore "שנו מספר טלפון" on the OTP step. */
+const SHOW_CHANGE_PHONE = false;
 
 function hebrewAuthError(err: unknown): string {
   const raw = err instanceof Error ? err.message : '';
@@ -144,9 +146,11 @@ export function RegisterPage() {
             >
               {resendIn > 0 ? `שלחו שוב (${resendIn})` : 'שלחו שוב'}
             </button>
-            <button type="button" className="secondary" disabled={busy} onClick={goBackToPhone}>
-              שנו מספר טלפון
-            </button>
+            {SHOW_CHANGE_PHONE && (
+              <button type="button" className="secondary" disabled={busy} onClick={goBackToPhone}>
+                שנו מספר טלפון
+              </button>
+            )}
           </form>
         )}
 

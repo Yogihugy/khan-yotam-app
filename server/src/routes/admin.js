@@ -9,6 +9,7 @@ import {
   softDeleteUser,
 } from '../services/adminUsers.js';
 import { closeDistressCall, listDistressCalls } from '../services/adminDistress.js';
+import { listBannedPhones, unbanPhone } from '../lib/bans.js';
 import { getSupabaseAdmin } from '../lib/supabase.js';
 
 export const adminRouter = Router();
@@ -81,6 +82,29 @@ adminRouter.get('/users/:id/trail', async (req, res, next) => {
     const hours = Number(req.query.hours || 24);
     const points = await listLocationTrail(req.params.id, { hours });
     res.json({ points });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// —— Banned phones ——
+adminRouter.get('/banned-phones', async (_req, res, next) => {
+  try {
+    const bans = await listBannedPhones();
+    res.json({ bans });
+  } catch (err) {
+    next(err);
+  }
+});
+
+adminRouter.post('/banned-phones/unban', async (req, res, next) => {
+  try {
+    const phone = req.body?.phone;
+    if (!phone) {
+      return res.status(400).json({ error: 'phone is required' });
+    }
+    const result = await unbanPhone(String(phone));
+    res.json(result);
   } catch (err) {
     next(err);
   }

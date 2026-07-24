@@ -23,3 +23,44 @@ export async function isPhoneBanned(phone) {
 
   return Boolean(data);
 }
+
+export async function listBannedPhones() {
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from('banned_phones')
+    .select('phone, banned_at, banned_by, reason, banned_by_user:banned_by(id, name)')
+    .order('banned_at', { ascending: false });
+
+  if (error) {
+    throw Object.assign(new Error(error.message), { status: 500 });
+  }
+
+  return data || [];
+}
+
+/**
+ * Removes the ban row only. Does not clear permanently_removed on any user.
+ */
+export async function unbanPhone(phone) {
+  const normalized = normalizeToE164(phone);
+  if (!normalized || !/^\+\d{8,15}$/.test(normalized)) {
+    throw Object.assign(new Error('Invalid phone number'), { status: 400 });
+  }
+
+  const supabase = getSupabaseAdmin();
+  const { data, error } = await supabase
+    .from('banned_phones')
+    .delete()
+    .eq('phone', normalized)
+    .select('phone')
+    .maybeSingle();
+
+  if (error) {
+    throw Object.assign(new Error(error.message), { status: 500 });
+  }
+  if (!data) {
+    throw Object.assign(new Error('Ban not found'), { status: 404 });
+  }
+
+  return { ok: true };
+}

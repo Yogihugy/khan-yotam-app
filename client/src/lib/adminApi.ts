@@ -66,6 +66,14 @@ export type ActivityEvent = {
   users?: { id: string; name: string; phone: string } | null;
 };
 
+export type BannedPhoneRow = {
+  phone: string;
+  banned_at: string;
+  banned_by: string | null;
+  reason: string | null;
+  banned_by_user?: { id: string; name: string } | null;
+};
+
 export type PoiAdmin = {
   id: string;
   name: string;
@@ -100,6 +108,13 @@ export const adminApi = {
     adminFetch<{ points: Array<{ lat: number; lng: number; recorded_at: string }> }>(
       `/users/${id}/trail?hours=${hours}`,
     ),
+
+  listBannedPhones: () => adminFetch<{ bans: BannedPhoneRow[] }>('/banned-phones'),
+  unbanPhone: (phone: string) =>
+    adminFetch<{ ok: boolean }>('/banned-phones/unban', {
+      method: 'POST',
+      body: JSON.stringify({ phone }),
+    }),
 
   listDistress: (openOnly = false) =>
     adminFetch<{ calls: DistressCallRow[] }>(`/distress${openOnly ? '?open=1' : ''}`),
