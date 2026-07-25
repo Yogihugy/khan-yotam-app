@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Link, Navigate, Route, Routes, useSearchParams } from 'react-router-dom';
 import { AppShell } from '../components/AppShell';
 import { useAuthState } from '../hooks/useAuthState';
 import { startDistressQueueWorker } from '../lib/distressSend';
@@ -14,6 +14,26 @@ import { StatusPage } from './StatusPage';
 import { AdminDashboardPage } from './admin/AdminDashboardPage';
 
 function GuestLanding() {
+  const [params] = useSearchParams();
+  const justDisconnected = params.get('disconnected') === '1';
+
+  if (justDisconnected) {
+    return (
+      <main className="page">
+        <div className="panel">
+          <h1>חאן יותם</h1>
+          <p className="muted">
+            התנתקת בהצלחה. כדי להתחבר שוב, פתחו את הקישור שקיבלתם, או הירשמו מחדש עם מספר
+            הטלפון שלכם.
+          </p>
+          <Link to="/register" className="primary">
+            הרשמה מחדש
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="page">
       <div className="panel">
@@ -118,7 +138,7 @@ export function AuthenticatedApp() {
                 writeCachedUser(next);
                 void auth.refreshUser();
               }}
-              onDisconnect={() => void auth.signOut()}
+              onDisconnect={() => auth.signOut()}
             />
           }
         />
