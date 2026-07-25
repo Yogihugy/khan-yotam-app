@@ -1101,6 +1101,11 @@ code {
   align-items: end;
 }
 
+.admin-form-grid.admin-filter-narrow {
+  max-width: 14rem;
+  width: 100%;
+}
+
 .admin-form-grid select,
 .admin-stack textarea,
 textarea {

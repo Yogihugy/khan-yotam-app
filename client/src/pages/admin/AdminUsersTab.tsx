@@ -194,7 +194,7 @@ export function AdminUsersTab() {
         </p>
       )}
 
-      <div className="admin-form-grid">
+      <div className="admin-form-grid admin-filter-narrow">
         <label>
           סטטוס משתמש
           <select
