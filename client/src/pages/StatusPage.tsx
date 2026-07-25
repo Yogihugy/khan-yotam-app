@@ -62,7 +62,10 @@ export function StatusPage({ user, onUserChange, onDisconnect }: Props) {
           type="button"
           className="status-option danger"
           disabled={busy}
-          onClick={onDisconnect}
+          onClick={() => {
+            if (!window.confirm('להתנתק מהאפליקציה?')) return;
+            onDisconnect();
+          }}
         >
           <strong>התנתקות</strong>
           <span>יציאה מהאפליקציה</span>

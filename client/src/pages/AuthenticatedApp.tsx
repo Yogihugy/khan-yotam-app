@@ -69,8 +69,18 @@ export function AuthenticatedApp() {
     return <Navigate to="/onboarding" replace />;
   }
 
-  if (!auth.user?.traveler_type) {
+  if (auth.session && auth.user && !auth.user.traveler_type) {
     return <Navigate to="/complete-profile" replace />;
+  }
+
+  if (!auth.user) {
+    return (
+      <main className="page">
+        <div className="panel">
+          <p>טוען…</p>
+        </div>
+      </main>
+    );
   }
 
   const user = auth.user;

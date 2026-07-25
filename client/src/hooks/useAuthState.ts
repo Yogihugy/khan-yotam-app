@@ -41,9 +41,9 @@ export function useAuthState(): AuthState {
   }, []);
 
   const signOut = useCallback(async () => {
+    await getSupabase().auth.signOut();
     clearCachedUser();
     setUser(null);
-    await getSupabase().auth.signOut();
   }, []);
 
   useEffect(() => {
