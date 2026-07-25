@@ -39,9 +39,11 @@ function GuestLanding() {
       <div className="panel">
         <h1>חאן יותם</h1>
         <p className="muted">הכניסה היא בהזמנה בלבד. פתחו את הקישור שקיבלתם בוואטסאפ.</p>
-        <p className="muted">
-          לבדיקה מקומית: <code>/invite/&lt;token&gt;</code>
-        </p>
+        {import.meta.env.DEV && (
+          <p className="muted">
+            לבדיקה מקומית: <code>/invite/&lt;token&gt;</code>
+          </p>
+        )}
       </div>
     </main>
   );
