@@ -23,6 +23,29 @@ export type ConversationPreview = {
   threadId: string;
 };
 
+type ChatPeerProfile = {
+  id: string;
+  name: string;
+  color: string;
+  traveler_type: string | null;
+};
+
+const FALLBACK_PEER = {
+  name: 'משתמש/ת',
+  color: '#7f8c8d',
+  traveler_type: null as string | null,
+};
+
+async function fetchChatPeerProfiles(peerIds: string[]): Promise<ChatPeerProfile[]> {
+  if (peerIds.length === 0) return [];
+  const supabase = getSupabase();
+  const { data, error } = await supabase.rpc('get_chat_peer_profiles', {
+    peer_ids: peerIds,
+  });
+  if (error) throw error;
+  return (data || []) as ChatPeerProfile[];
+}
+
 export async function fetchMessages(threadId: string): Promise<ChatMessage[]> {
   const supabase = getSupabase();
   const { data, error } = await supabase
@@ -95,21 +118,18 @@ export async function fetchConversationPreviews(
   const nameById = new Map<string, { name: string; color: string }>();
 
   if (uniquePeers.length > 0) {
-    // Peer names via active map RPC + self-known threads (phone hidden)
-    const { data: active } = await supabase.rpc('get_active_map_users');
-    for (const u of active || []) {
+    const peers = await fetchChatPeerProfiles(uniquePeers);
+    for (const u of peers) {
       nameById.set(u.id, { name: u.name, color: u.color });
-    }
-
-    // Fallback labels for peers not currently active on map
-    for (const id of uniquePeers) {
-      if (!nameById.has(id)) nameById.set(id, { name: 'משתמש/ת', color: '#7f8c8d' });
     }
   }
 
   return [...byThread.values()].map((m) => {
     const peerId = m.from_user_id === selfId ? m.to_user_id : m.from_user_id;
-    const peer = nameById.get(peerId) || { name: 'משתמש/ת', color: '#7f8c8d' };
+    const peer = nameById.get(peerId) || {
+      name: FALLBACK_PEER.name,
+      color: FALLBACK_PEER.color,
+    };
     return {
       peerId,
       peerName: peer.name,
@@ -127,9 +147,8 @@ export async function fetchChatPeer(peerId: string): Promise<{
   color: string;
   traveler_type: string | null;
 } | null> {
-  const supabase = getSupabase();
-  const { data: active } = await supabase.rpc('get_active_map_users');
-  const found = (active || []).find((u: { id: string }) => u.id === peerId);
+  const peers = await fetchChatPeerProfiles([peerId]);
+  const found = peers[0];
   if (found) {
     return {
       id: found.id,
@@ -138,5 +157,24 @@ export async function fetchChatPeer(peerId: string): Promise<{
       traveler_type: found.traveler_type,
     };
   }
-  return { id: peerId, name: 'משתמש/ת', color: '#7f8c8d', traveler_type: null };
+
+  // New thread before any message: no shared-message row yet — try active-map profiles.
+  const supabase = getSupabase();
+  const { data: active } = await supabase.rpc('get_active_map_users');
+  const onMap = (active || []).find((u: { id: string }) => u.id === peerId);
+  if (onMap) {
+    return {
+      id: onMap.id,
+      name: onMap.name,
+      color: onMap.color,
+      traveler_type: onMap.traveler_type ?? null,
+    };
+  }
+
+  return {
+    id: peerId,
+    name: FALLBACK_PEER.name,
+    color: FALLBACK_PEER.color,
+    traveler_type: FALLBACK_PEER.traveler_type,
+  };
 }
