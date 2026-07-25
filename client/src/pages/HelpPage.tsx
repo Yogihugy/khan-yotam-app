@@ -110,7 +110,7 @@ export function HelpPage() {
 
         <section className="help-section">
           <h2>7. מצב שקט</h2>
-          <p>בתפריט התחתון (סטטוס) אפשר לעבור למצב שקט:</p>
+          <p>במסך סטטוס (בתפריט התחתון) אפשר לעבור למצב שקט:</p>
           <ul className="onboarding-list">
             <li>אתם לא מופיעים על המפה למשתמשים אחרים.</li>
             <li>אתם עדיין רואים את שאר המשתמשים.</li>
@@ -121,7 +121,7 @@ export function HelpPage() {
 
         <section className="help-section">
           <h2>8. יציאה</h2>
-          <p>בתפריט סטטוס ← התנתקות.</p>
+          <p>מסך סטטוס ← התנתקות.</p>
         </section>
 
         <p className="muted">שאלות? פנו לחאן יותם.</p>

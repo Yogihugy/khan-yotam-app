@@ -3,12 +3,11 @@ import { EmergencyBanner } from './EmergencyBanner';
 import { OfflineBanner } from './OfflineBanner';
 
 type Props = {
-  onOpenStatus: () => void;
   statusLabel: string;
   isAdmin?: boolean;
 };
 
-export function AppShell({ onOpenStatus, statusLabel, isAdmin }: Props) {
+export function AppShell({ statusLabel, isAdmin }: Props) {
   return (
     <div className="app-shell">
       <OfflineBanner />
@@ -40,9 +39,12 @@ export function AppShell({ onOpenStatus, statusLabel, isAdmin }: Props) {
             ניהול
           </NavLink>
         )}
-        <button type="button" className="nav-item" onClick={onOpenStatus}>
+        <NavLink
+          to="/status"
+          className={({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')}
+        >
           {statusLabel}
-        </button>
+        </NavLink>
       </nav>
     </div>
   );
