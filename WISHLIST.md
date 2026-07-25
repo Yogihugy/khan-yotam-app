@@ -58,4 +58,7 @@ See also: [SMS_SELFREG_BRIEF.md](./SMS_SELFREG_BRIEF.md) for the full scoping on
    - *Size/risk: Small→medium ON TOP of item 6 — the WhatsApp-sending loop already supports messaging N phones; the real work is resolving which recipients belong to a given segment, not building multi-recipient sending from scratch.*
 
 8. **Audible + visible message notifications** — when a message arrives, trigger both a written/visible alert and a ringing/notification sound, not just a silent counter/badge.
-   - *Size/risk: Medium — needs browser/PWA push notification support (permissions, service worker push handling); well-trodden pattern but a real feature, not a tweak.*
+   - *Size/risk: Medium — needs browser/PWA push notification support (permissions, service worker push handling); well-trodden pattern but a real feature, not a tweak. Real push notifications (app closed/backgrounded) only work on iOS 16.4+ and only if the user has "Added to Home Screen" — a regular Safari/Chrome tab cannot receive push on iOS at all. In-app notification (sound/badge while the app is open) is simple and platform-independent; background push is the harder, iOS-constrained part. Revisit platform mix once real users are on the app.*
+
+9. **Media attachments in regular chat** — allow attaching photos, files, and voice notes to regular 1:1 messages, not just the distress/emergency chat (see item 2, which is distress-only and already scoped separately).
+   - *Size/risk: Medium — broader than item 2's distress-chat scope; needs file upload/storage handling (Supabase Storage or similar), size limits, and UI for regular chat, not just the emergency flow. No urgency — decide scope once prioritized.*
