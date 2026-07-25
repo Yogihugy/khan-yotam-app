@@ -97,6 +97,8 @@ export function MapView({
   const userLayerRef = useRef<L.LayerGroup | null>(null);
   const poiLayerRef = useRef<L.LayerGroup | null>(null);
   const trailLayerRef = useRef<L.LayerGroup | null>(null);
+  /** Reused Leaflet markers so open popups survive presence/GPS refresh. */
+  const markersByIdRef = useRef(new Map<string, L.Marker>());
   const myLocationRef = useRef(myLocation);
   const onMessageRef = useRef(onMessageUser);
   const onMapClickRef = useRef(onMapClick);
@@ -181,6 +183,20 @@ export function MapView({
     };
     map.on('click', handleMapClick);
 
+    // One delegated listener: survives setPopupContent (button DOM may be replaced).
+    const handlePopupMsgClick = (ev: MouseEvent) => {
+      const target = ev.target;
+      if (!(target instanceof Element)) return;
+      const btn = target.closest('.map-popup-msg');
+      if (!btn) return;
+      const peerId = btn.getAttribute('data-peer');
+      if (!peerId) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      onMessageRef.current?.(peerId);
+    };
+    map.getContainer().addEventListener('click', handlePopupMsgClick, true);
+
     const invalidate = () => map.invalidateSize();
     requestAnimationFrame(invalidate);
     const t1 = window.setTimeout(invalidate, 100);
@@ -192,12 +208,14 @@ export function MapView({
       window.clearTimeout(t1);
       window.clearTimeout(t2);
       ro.disconnect();
+      map.getContainer().removeEventListener('click', handlePopupMsgClick, true);
       map.off('click', handleMapClick);
       map.remove();
       mapRef.current = null;
       userLayerRef.current = null;
       poiLayerRef.current = null;
       trailLayerRef.current = null;
+      markersByIdRef.current.clear();
     };
   }, []);
 
@@ -212,28 +230,33 @@ export function MapView({
   useEffect(() => {
     const layer = userLayerRef.current;
     if (!layer) return;
-    layer.clearLayers();
 
-    for (const marker of markers) {
-      const m = L.marker([marker.lat, marker.lng], {
-        icon: userIcon(marker),
-        userId: marker.userId,
-      } as L.MarkerOptions);
-      m.bindPopup(markerPopup(marker));
-      if (!marker.isSelf) {
-        m.on('popupopen', () => {
-          const btn = document.querySelector(
-            `.map-popup-msg[data-peer="${marker.userId}"]`,
-          ) as HTMLButtonElement | null;
-          if (!btn) return;
-          const handler = (ev: MouseEvent) => {
-            ev.preventDefault();
-            onMessageRef.current?.(marker.userId);
-          };
-          btn.addEventListener('click', handler, { once: true });
-        });
+    const byId = markersByIdRef.current;
+    const nextIds = new Set(markers.map((m) => m.userId));
+
+    for (const [id, marker] of byId) {
+      if (!nextIds.has(id)) {
+        layer.removeLayer(marker);
+        byId.delete(id);
       }
-      m.addTo(layer);
+    }
+
+    for (const model of markers) {
+      const existing = byId.get(model.userId);
+      if (!existing) {
+        const m = L.marker([model.lat, model.lng], { icon: userIcon(model) });
+        m.bindPopup(markerPopup(model));
+        m.addTo(layer);
+        byId.set(model.userId, m);
+        continue;
+      }
+
+      const ll = existing.getLatLng();
+      if (ll.lat !== model.lat || ll.lng !== model.lng) {
+        existing.setLatLng([model.lat, model.lng]);
+      }
+      existing.setIcon(userIcon(model));
+      existing.setPopupContent(markerPopup(model));
     }
   }, [markers]);
 
