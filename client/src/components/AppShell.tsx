@@ -3,11 +3,10 @@ import { EmergencyBanner } from './EmergencyBanner';
 import { OfflineBanner } from './OfflineBanner';
 
 type Props = {
-  statusLabel: string;
   isAdmin?: boolean;
 };
 
-export function AppShell({ statusLabel, isAdmin }: Props) {
+export function AppShell({ isAdmin }: Props) {
   return (
     <div className="app-shell">
       <OfflineBanner />
@@ -43,7 +42,7 @@ export function AppShell({ statusLabel, isAdmin }: Props) {
           to="/status"
           className={({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')}
         >
-          {statusLabel}
+          סטטוס
         </NavLink>
       </nav>
     </div>

@@ -107,15 +107,10 @@ export function AuthenticatedApp() {
 
   const user = auth.user;
 
-  const statusLabel =
-    user.status === 'quiet' ? 'שקט' : user.status === 'offline' ? 'לא מחובר' : 'סטטוס';
-
   return (
     <Routes>
       <Route path="admin" element={<AdminDashboardPage user={user} />} />
-      <Route
-        element={<AppShell statusLabel={statusLabel} isAdmin={user.role === 'admin'} />}
-      >
+      <Route element={<AppShell isAdmin={user.role === 'admin'} />}>
         <Route index element={<MapPage user={user} />} />
         <Route path="messages" element={<MessagesPage user={user} />} />
         <Route path="messages/:peerId" element={<ChatThreadPage user={user} />} />
