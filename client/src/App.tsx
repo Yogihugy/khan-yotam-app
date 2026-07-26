@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { PwaUpdateBanner } from './components/PwaUpdateBanner';
 import { assertClientEnv } from './lib/config';
 import { AuthenticatedApp } from './pages/AuthenticatedApp';
 import { CompleteProfilePage } from './pages/CompleteProfilePage';
@@ -11,6 +12,7 @@ assertClientEnv();
 export default function App() {
   return (
     <BrowserRouter>
+      <PwaUpdateBanner />
       <Routes>
         <Route path="/invite/:token" element={<InvitePage />} />
         <Route path="/register" element={<RegisterPage />} />

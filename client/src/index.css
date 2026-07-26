@@ -519,6 +519,64 @@ code {
   z-index: 1000;
 }
 
+/* Top strip only — keeps clear of distress (map bottom) and chat composer. */
+.pwa-update-banner {
+  position: fixed;
+  top: 0;
+  inset-inline: 0;
+  z-index: 1100;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem 0.75rem;
+  padding: calc(0.45rem + env(safe-area-inset-top, 0px)) 0.75rem 0.45rem;
+  background: rgba(26, 58, 74, 0.96);
+  border-bottom: 1px solid var(--line);
+  color: var(--foam);
+  text-align: center;
+  pointer-events: auto;
+}
+
+.pwa-update-banner-text {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.pwa-update-banner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.pwa-update-banner-refresh,
+.pwa-update-banner-dismiss {
+  border: 1px solid var(--line);
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+}
+
+.pwa-update-banner-refresh {
+  background: var(--sand);
+  color: #0f2a36;
+  font-weight: 600;
+}
+
+.pwa-update-banner-dismiss {
+  background: transparent;
+  color: var(--foam);
+}
+
+.pwa-update-banner-refresh:disabled,
+.pwa-update-banner-dismiss:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
 .inapp-browser-banner {
   display: grid;
   gap: 0.45rem;
