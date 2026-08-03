@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { composeDisplayName } from '../lib/displayName.js';
 import { getSupabaseAdmin } from '../lib/supabase.js';
 import { requestOtp, verifyOtp } from '../services/otp.js';
 import { createSessionForUser } from '../services/session.js';
@@ -116,7 +117,9 @@ authRouter.post('/verify-invite', async (req, res, next) => {
 /**
  * POST /auth/complete-profile
  * Headers: Authorization: Bearer <access_token>
- * Body: { name, traveler_type, color }
+ * Body: { first_name, last_name?, bio?, social_link?, traveler_type, color }
+ * bio / social_link are optional and never part of profile-completeness.
+ * name is composed server-side from first_name + last_name (Approach A).
  */
 authRouter.post('/complete-profile', async (req, res, next) => {
   try {
@@ -129,9 +132,13 @@ authRouter.post('/complete-profile', async (req, res, next) => {
       return res.status(401).json({ error: 'Missing Authorization Bearer token' });
     }
 
-    const { name, traveler_type, color } = req.body || {};
-    if (!name || typeof name !== 'string' || name.trim().length < 1) {
-      return res.status(400).json({ error: 'name is required' });
+    const { first_name, last_name, bio, social_link, traveler_type, color } = req.body || {};
+    const firstName =
+      typeof first_name === 'string' ? first_name.trim() : '';
+    const lastName =
+      typeof last_name === 'string' ? last_name.trim() : '';
+    if (!firstName) {
+      return res.status(400).json({ error: 'first_name is required' });
     }
     if (!ALLOWED_TRAVELER_TYPES.has(traveler_type)) {
       return res.status(400).json({
@@ -141,6 +148,14 @@ authRouter.post('/complete-profile', async (req, res, next) => {
     if (!ALLOWED_COLORS.has(color)) {
       return res.status(400).json({ error: 'color is not an allowed option' });
     }
+
+    const bioValue =
+      typeof bio === 'string' && bio.trim() ? bio.trim() : null;
+    const socialLinkValue =
+      typeof social_link === 'string' && social_link.trim()
+        ? social_link.trim()
+        : null;
+    const displayName = composeDisplayName(firstName, lastName);
 
     const supabase = getSupabaseAdmin();
     const { data: authData, error: authError } = await supabase.auth.getUser(accessToken);
@@ -170,7 +185,11 @@ authRouter.post('/complete-profile', async (req, res, next) => {
     const { data: updated, error: updateError } = await supabase
       .from('users')
       .update({
-        name: name.trim(),
+        first_name: firstName,
+        last_name: lastName || null,
+        bio: bioValue,
+        social_link: socialLinkValue,
+        name: displayName,
         traveler_type,
         color,
         invite_token: null,
@@ -189,6 +208,10 @@ authRouter.post('/complete-profile', async (req, res, next) => {
       user: {
         id: updated.id,
         name: updated.name,
+        first_name: updated.first_name,
+        last_name: updated.last_name,
+        bio: updated.bio,
+        social_link: updated.social_link,
         phone: updated.phone,
         role: updated.role,
         traveler_type: updated.traveler_type,

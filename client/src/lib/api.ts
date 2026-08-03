@@ -5,6 +5,10 @@ import type { Session } from '@supabase/supabase-js';
 export type PublicUser = {
   id: string;
   name: string;
+  first_name?: string | null;
+  last_name?: string | null;
+  bio?: string | null;
+  social_link?: string | null;
   phone: string;
   role: 'guest' | 'staff' | 'admin';
   traveler_type: 'hiker' | 'cyclist' | 'staff' | 'other' | null;
@@ -60,7 +64,14 @@ export function verifyOtp(phone: string, code: string) {
 
 export function completeProfile(
   accessToken: string,
-  payload: { name: string; traveler_type: string; color: string },
+  payload: {
+    first_name: string;
+    last_name?: string;
+    bio?: string;
+    social_link?: string;
+    traveler_type: string;
+    color: string;
+  },
 ) {
   return apiFetch<{ user: PublicUser }>('/auth/complete-profile', {
     method: 'POST',

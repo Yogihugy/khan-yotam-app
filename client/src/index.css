@@ -88,6 +88,18 @@ label {
   font-size: 0.95rem;
 }
 
+.name-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+@media (max-width: 28rem) {
+  .name-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 input {
   width: 100%;
   border: 1px solid var(--line);

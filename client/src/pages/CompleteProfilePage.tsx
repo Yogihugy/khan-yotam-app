@@ -8,7 +8,12 @@ import { hasCompletedOnboarding, readCachedUser, writeCachedUser } from '../lib/
 export function CompleteProfilePage() {
   const navigate = useNavigate();
   const cached = useMemo(() => readCachedUser(), []);
-  const [name, setName] = useState(cached?.name || '');
+  const [firstName, setFirstName] = useState(
+    cached?.first_name || (cached?.last_name ? '' : cached?.name) || '',
+  );
+  const [lastName, setLastName] = useState(cached?.last_name || '');
+  const [bio, setBio] = useState(cached?.bio || '');
+  const [socialLink, setSocialLink] = useState(cached?.social_link || '');
   const [travelerType, setTravelerType] = useState<TravelerType>('hiker');
   const [color, setColor] = useState<string>(PROFILE_COLORS[1]);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +31,10 @@ export function CompleteProfilePage() {
       }
 
       const result = await completeProfile(accessToken, {
-        name: name.trim(),
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        bio: bio.trim(),
+        social_link: socialLink.trim(),
         traveler_type: travelerType,
         color,
       });
@@ -44,16 +52,50 @@ export function CompleteProfilePage() {
     <main className="page">
       <form className="panel" onSubmit={onSubmit}>
         <h1>השלמת פרופיל</h1>
-        <p className="muted">שם התצוגה, סוג מטייל וצבע על המפה.</p>
+        <p className="muted">שם, כמה מילים עליך, סוג מטייל וצבע על המפה.</p>
+
+        <div className="name-row">
+          <label>
+            שם פרטי
+            <input
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+              maxLength={80}
+              autoComplete="given-name"
+            />
+          </label>
+          <label>
+            שם משפחה
+            <input
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              maxLength={80}
+              autoComplete="family-name"
+            />
+          </label>
+        </div>
 
         <label>
-          שם תצוגה
+          כמה מילים עליי
+          <textarea
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            maxLength={280}
+            rows={3}
+            placeholder="אופציונלי"
+          />
+        </label>
+
+        <label>
+          קישור לרשת חברתית
           <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            maxLength={80}
-            autoComplete="name"
+            value={socialLink}
+            onChange={(e) => setSocialLink(e.target.value)}
+            maxLength={500}
+            placeholder="https://… (אופציונלי)"
+            autoComplete="url"
+            inputMode="url"
           />
         </label>
 
