@@ -26,6 +26,8 @@ Informal list of future improvements and UX polish items. Not committed to a pha
 
 5. **Two paths for self-registration discovery** — (1) Drafted a brief and visual mockup for a new section/page on the Chan Yotam Wix site (yotamwaysideinn.org) linking to /register, same-tab, for self-service sign-up. Pending: confirming who has Wix edit access (via Nir), and coordinating who builds it. (2) Direct link — the /register URL can also be sent standalone (SMS, WhatsApp, etc.) without going through the Wix site at all, landing straight on the phone-entry screen. Both paths lead to the same flow. Neither should go live/be sent until real SMS (Twilio) is active — otherwise visitors hit a dead end waiting for a verification code that never arrives.
 
+6. **PWA update banner hard to notice** — The "יש עדכון חדש — לחצו לרענון" banner (added for fixing stale cached versions after deploys) is easy to miss/overlook in practice — real usage showed it wasn't visually prominent enough. Worth revisiting styling/placement to make it more noticeable.
+
 ## Admin / Configuration
 
 1. **Emergency phone number not editable via admin UI** — The top "חירום - לחצו להתקשר" bar reads its number from app_config.emergency_phone, but there's currently no admin UI to change it — it can only be updated via direct SQL. Consider adding a simple Settings/Config tab (or a field within an existing tab) so admins can update this number without developer/DB access. Note this is a different number from the Duty Officer contact (used for WhatsApp distress alerts) — both should probably be editable from the same place for clarity.
