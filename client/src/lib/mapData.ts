@@ -1,5 +1,6 @@
 import { getSupabase } from './supabase';
 import { freshnessOf } from './geo';
+import { composeDisplayName } from './displayName';
 import type { PublicUser } from './api';
 
 export type MapUserProfile = {
@@ -42,7 +43,9 @@ export async function fetchOwnUser(): Promise<PublicUser | null> {
 
   const { data, error } = await supabase
     .from('users')
-    .select('id, name, phone, role, traveler_type, color, status, expires_at')
+    .select(
+      'id, name, first_name, last_name, bio, social_link, phone, role, traveler_type, color, status, expires_at',
+    )
     .eq('id', id)
     .eq('is_deleted', false)
     .maybeSingle();
@@ -107,7 +110,10 @@ export async function updateOwnStatus(status: 'active' | 'quiet' | 'offline') {
 }
 
 export async function updateOwnProfile(payload: {
-  name: string;
+  first_name: string;
+  last_name: string;
+  bio?: string | null;
+  social_link?: string | null;
   traveler_type: string;
   color: string;
 }) {
@@ -116,16 +122,24 @@ export async function updateOwnProfile(payload: {
   const id = auth.user?.id;
   if (!id) throw new Error('Not signed in');
 
+  const name = composeDisplayName(payload.first_name, payload.last_name);
+
   const { data, error } = await supabase
     .from('users')
     .update({
-      name: payload.name.trim(),
+      name,
+      first_name: payload.first_name.trim(),
+      last_name: payload.last_name.trim(),
+      bio: payload.bio || null,
+      social_link: payload.social_link || null,
       traveler_type: payload.traveler_type,
       color: payload.color,
       last_seen_at: new Date().toISOString(),
     })
     .eq('id', id)
-    .select('id, name, phone, role, traveler_type, color, status, expires_at')
+    .select(
+      'id, name, first_name, last_name, bio, social_link, phone, role, traveler_type, color, status, expires_at',
+    )
     .single();
 
   if (error) throw error;

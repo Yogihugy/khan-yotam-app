@@ -10,6 +10,31 @@ type Props = {
   onUserChange: (user: PublicUser) => void;
 };
 
+/** One-time seed for first/last from split fields, or legacy name fallback. */
+function seedNameParts(user: PublicUser): { firstName: string; lastName: string } {
+  if (user.first_name || user.last_name) {
+    return {
+      firstName: user.first_name || '',
+      lastName: user.last_name || '',
+    };
+  }
+
+  const legacy = (user.name || '').trim();
+  if (!legacy) {
+    return { firstName: '', lastName: '' };
+  }
+
+  const spaceIdx = legacy.indexOf(' ');
+  if (spaceIdx === -1) {
+    return { firstName: legacy, lastName: '' };
+  }
+
+  return {
+    firstName: legacy.slice(0, spaceIdx),
+    lastName: legacy.slice(spaceIdx + 1).trim(),
+  };
+}
+
 function HelpIcon() {
   return (
     <svg
@@ -29,7 +54,10 @@ function HelpIcon() {
 }
 
 export function ProfilePage({ user, onUserChange }: Props) {
-  const [name, setName] = useState(user.name || '');
+  const [firstName, setFirstName] = useState(() => seedNameParts(user).firstName);
+  const [lastName, setLastName] = useState(() => seedNameParts(user).lastName);
+  const [bio, setBio] = useState(user.bio || '');
+  const [socialLink, setSocialLink] = useState(user.social_link || '');
   const [travelerType, setTravelerType] = useState<TravelerType>(
     (user.traveler_type as TravelerType) || 'hiker',
   );
@@ -47,7 +75,10 @@ export function ProfilePage({ user, onUserChange }: Props) {
     setSaving(true);
     try {
       const updated = await updateOwnProfile({
-        name: name.trim(),
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        bio: bio.trim() || null,
+        social_link: socialLink.trim() || null,
         traveler_type: travelerType,
         color,
       });
@@ -65,21 +96,55 @@ export function ProfilePage({ user, onUserChange }: Props) {
     <main className="shell-page">
       <form className="panel" onSubmit={onSubmit}>
         <h1>פרופיל</h1>
-        <p className="muted">שם תצוגה, סוג מטייל וצבע על המפה.</p>
+        <p className="muted">שם, כמה מילים עליך, סוג מטייל וצבע על המפה.</p>
 
         <Link to="/help" className="secondary profile-help-link">
           <HelpIcon />
           מדריך שימוש
         </Link>
 
+        <div className="name-row">
+          <label>
+            שם פרטי
+            <input
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+              maxLength={80}
+              autoComplete="given-name"
+            />
+          </label>
+          <label>
+            שם משפחה
+            <input
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              maxLength={80}
+              autoComplete="family-name"
+            />
+          </label>
+        </div>
+
         <label>
-          שם תצוגה
+          כמה מילים עליי
+          <textarea
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            maxLength={280}
+            rows={3}
+            placeholder="אופציונלי"
+          />
+        </label>
+
+        <label>
+          קישור לרשת חברתית
           <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            maxLength={80}
-            autoComplete="name"
+            value={socialLink}
+            onChange={(e) => setSocialLink(e.target.value)}
+            maxLength={500}
+            placeholder="https://… (אופציונלי)"
+            autoComplete="url"
+            inputMode="url"
           />
         </label>
 
