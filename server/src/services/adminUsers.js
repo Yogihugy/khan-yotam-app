@@ -6,7 +6,7 @@ import { getSupabaseAdmin } from '../lib/supabase.js';
 export async function listUsers({ lifecycle = 'active' } = {}) {
   const supabase = getSupabaseAdmin();
   const selectCols =
-    'id, name, phone, role, traveler_type, status, color, last_seen_at, last_location_at, created_at, expires_at, is_deleted, permanently_removed';
+    'id, name, phone, role, traveler_type, status, color, last_seen_at, last_location_at, created_at, expires_at, is_deleted, permanently_removed, bio, social_link';
 
   if (lifecycle === 'banned') {
     const { data: banRows, error: banError } = await supabase.from('banned_phones').select('phone');

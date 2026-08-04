@@ -36,6 +36,8 @@ export type AdminUserRow = {
   is_deleted: boolean;
   permanently_removed: boolean;
   is_banned: boolean;
+  bio: string | null;
+  social_link: string | null;
 };
 
 export type DistressCallRow = {

@@ -68,11 +68,27 @@ function markerPopup(marker: MapMarkerModel) {
     ? ''
     : `<button type="button" class="map-popup-msg" data-peer="${marker.userId}">שליחת הודעה</button>`;
 
+  const bioRaw = (marker.bio || '').trim();
+  const bio = bioRaw ? `<div class="map-popup-bio">${escapeHtml(bioRaw)}</div>` : '';
+
+  const socialRaw = (marker.social_link || '').trim();
+  let social = '';
+  if (socialRaw) {
+    const escaped = escapeHtml(socialRaw);
+    const isSafeHttp =
+      escaped.startsWith('http://') || escaped.startsWith('https://');
+    social = isSafeHttp
+      ? `<div class="map-popup-social"><a href="${escaped}" target="_blank" rel="noopener noreferrer">${escaped}</a></div>`
+      : `<div class="map-popup-social">${escaped}</div>`;
+  }
+
   return `
     <div class="map-popup" dir="rtl">
       <strong>${escapeHtml(marker.name)}</strong>
       ${age}
       <div>${escapeHtml(travelerLabel(marker.travelerType))}</div>
+      ${bio}
+      ${social}
       ${action}
     </div>`;
 }
@@ -245,7 +261,7 @@ export function MapView({
       const existing = byId.get(model.userId);
       if (!existing) {
         const m = L.marker([model.lat, model.lng], { icon: userIcon(model) });
-        m.bindPopup(markerPopup(model));
+        m.bindPopup(markerPopup(model), { maxWidth: 260 });
         m.addTo(layer);
         byId.set(model.userId, m);
         continue;

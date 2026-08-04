@@ -61,6 +61,8 @@ export function MapPage({ user }: Props) {
           status: user.status,
           color: user.color,
           last_location_at: byId.get(user.id)?.last_location_at ?? null,
+          bio: user.bio ?? null,
+          social_link: user.social_link ?? null,
         });
         nextProfiles = [...byId.values()];
       } else {
@@ -76,6 +78,8 @@ export function MapPage({ user }: Props) {
               status: user.status,
               color: user.color,
               last_location_at: null,
+              bio: user.bio ?? null,
+              social_link: user.social_link ?? null,
             },
           ];
         }
@@ -190,6 +194,8 @@ export function MapPage({ user }: Props) {
           isQuiet: user.status === 'quiet',
           isStale: false,
           ageLabel: null,
+          bio: user.bio ?? null,
+          social_link: user.social_link ?? null,
         },
       ];
     }
@@ -209,6 +215,8 @@ export function MapPage({ user }: Props) {
           isQuiet: false,
           isStale: true,
           ageLabel: 'מטמון',
+          bio: null,
+          social_link: null,
         }));
       }
     }

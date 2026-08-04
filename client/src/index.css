@@ -836,6 +836,18 @@ code {
   font-family: 'Rubik', sans-serif;
 }
 
+.map-popup-bio,
+.map-popup-social {
+  font-size: 0.85rem;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.map-popup-social a {
+  color: var(--accent);
+}
+
 .onboarding-list {
   margin: 0;
   padding-inline-start: 1.1rem;

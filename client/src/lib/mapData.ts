@@ -11,6 +11,8 @@ export type MapUserProfile = {
   status: PublicUser['status'];
   color: string;
   last_location_at: string | null;
+  bio: string | null;
+  social_link: string | null;
 };
 
 export type LiveLoc = {
@@ -33,6 +35,8 @@ export type MapMarkerModel = {
   isQuiet: boolean;
   isStale: boolean;
   ageLabel: string | null;
+  bio: string | null;
+  social_link: string | null;
 };
 
 export async function fetchOwnUser(): Promise<PublicUser | null> {
@@ -76,7 +80,7 @@ export async function fetchAdminExtraUsers(): Promise<MapUserProfile[]> {
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from('users')
-    .select('id, name, role, traveler_type, status, color, last_location_at')
+    .select('id, name, role, traveler_type, status, color, last_location_at, bio, social_link')
     .eq('is_deleted', false)
     .in('status', ['quiet', 'active']);
   if (error) throw error;
@@ -181,6 +185,8 @@ export function buildMarkers(args: {
       isQuiet,
       isStale: fresh?.kind === 'stale',
       ageLabel: fresh?.kind === 'aging' ? `נראה לפני ${fresh.ageMinutes} דק׳` : null,
+      bio: profile.bio ?? null,
+      social_link: profile.social_link ?? null,
     });
   }
 

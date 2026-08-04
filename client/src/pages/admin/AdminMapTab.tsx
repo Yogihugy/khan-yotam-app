@@ -79,6 +79,8 @@ export function AdminMapTab() {
             : fresh?.kind === 'stale'
               ? 'ישן'
               : null,
+        bio: u.bio ?? null,
+        social_link: u.social_link ?? null,
       });
     }
     return out;
