@@ -101,6 +101,8 @@ authRouter.post('/verify-invite', async (req, res, next) => {
       user: {
         id: user.id,
         name: user.name,
+        first_name: user.first_name,
+        last_name: user.last_name,
         phone: user.phone,
         role: user.role,
         traveler_type: user.traveler_type,

@@ -220,6 +220,8 @@ export async function verifyOtp(rawPhone, rawCode) {
     user: {
       id: profileUser.id,
       name: profileUser.name,
+      first_name: profileUser.first_name,
+      last_name: profileUser.last_name,
       phone: profileUser.phone,
       role: profileUser.role,
       traveler_type: profileUser.traveler_type,

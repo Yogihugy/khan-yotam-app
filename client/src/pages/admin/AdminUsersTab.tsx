@@ -207,7 +207,7 @@ export function AdminUsersTab() {
           </select>
         </label>
         <button type="submit" className="primary" disabled={busy}>
-          {busy ? 'שולחים הזמנה…' : 'הוספה + הזמנה'}
+          {busy ? 'יוצרים קישור…' : 'יצירת קישור הזמנה'}
         </button>
       </form>
       {inviteUrl && (
