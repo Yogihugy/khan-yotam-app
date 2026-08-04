@@ -25,7 +25,8 @@ export function AdminUsersTab() {
   const [lifecycle, setLifecycle] = useState<Lifecycle>('active');
   const [sortKey, setSortKey] = useState<SortKey>('name');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
   const [role, setRole] = useState<'guest' | 'staff' | 'admin'>('guest');
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
@@ -70,9 +71,15 @@ export function AdminUsersTab() {
     setError(null);
     setInviteUrl(null);
     try {
-      const result = await adminApi.addUser({ name, phone, role });
+      const result = await adminApi.addUser({
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        phone,
+        role,
+      });
       setInviteUrl(result.inviteUrl);
-      setName('');
+      setFirstName('');
+      setLastName('');
       setPhone('');
       await refresh();
     } catch (err) {
@@ -169,8 +176,23 @@ export function AdminUsersTab() {
       <h2>ניהול משתמשים</h2>
       <form className="admin-form-grid" onSubmit={onAdd}>
         <label>
-          שם
-          <input value={name} onChange={(e) => setName(e.target.value)} required />
+          שם פרטי
+          <input
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            required
+            maxLength={80}
+            autoComplete="given-name"
+          />
+        </label>
+        <label>
+          שם משפחה
+          <input
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            maxLength={80}
+            autoComplete="family-name"
+          />
         </label>
         <label>
           טלפון

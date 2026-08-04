@@ -45,8 +45,8 @@ export async function listUsers({ lifecycle = 'active' } = {}) {
   return (data || []).map((u) => ({ ...u, is_banned: bannedSet.has(u.phone) }));
 }
 
-export async function addUser({ name, phone, role }) {
-  return createInvitedUser({ name, phone, role, sendWhatsApp: true });
+export async function addUser({ first_name, last_name, phone, role }) {
+  return createInvitedUser({ first_name, last_name, phone, role, sendWhatsApp: true });
 }
 
 export async function softDeleteUser(userId, adminId) {

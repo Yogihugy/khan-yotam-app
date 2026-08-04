@@ -90,7 +90,12 @@ export type PoiAdmin = {
 export const adminApi = {
   listUsers: (lifecycle: 'active' | 'removed' | 'banned' | 'all' = 'active') =>
     adminFetch<{ users: AdminUserRow[] }>(`/users?lifecycle=${lifecycle}`),
-  addUser: (body: { name: string; phone: string; role: string }) =>
+  addUser: (body: {
+    first_name: string;
+    last_name?: string;
+    phone: string;
+    role: string;
+  }) =>
     adminFetch<{ userId: string; inviteUrl: string; inviteToken: string }>('/users', {
       method: 'POST',
       body: JSON.stringify(body),

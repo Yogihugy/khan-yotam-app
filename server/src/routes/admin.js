@@ -32,12 +32,14 @@ adminRouter.get('/users', async (req, res, next) => {
 
 adminRouter.post('/users', async (req, res, next) => {
   try {
-    const { name, phone, role } = req.body || {};
-    if (!name || !phone) {
-      return res.status(400).json({ error: 'name and phone are required' });
+    const { first_name, last_name, phone, role } = req.body || {};
+    const firstName = first_name != null ? String(first_name).trim() : '';
+    if (!firstName || !phone) {
+      return res.status(400).json({ error: 'first_name and phone are required' });
     }
     const result = await addUser({
-      name: String(name).trim(),
+      first_name: firstName,
+      last_name: String(last_name || '').trim(),
       phone: String(phone).trim(),
       role: role || 'guest',
     });

@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto';
 import { isPhoneBanned } from '../lib/bans.js';
+import { composeDisplayName } from '../lib/displayName.js';
 import { normalizeToE164 } from '../lib/phone.js';
 import { getSupabaseAdmin } from '../lib/supabase.js';
 import { expiresAtForRole, getConfig } from '../config.js';
@@ -9,9 +10,11 @@ import { sendInviteWhatsApp } from './whatsapp.js';
  * Creates auth.users + public.users with a fresh invite token.
  * Used by seed helper scripts and Phase D admin user management.
  * Phone is normalized to E.164 before ban-check, lookup, and storage.
+ * name is composed from first_name + last_name (Approach A display field).
  */
 export async function createInvitedUser({
-  name,
+  first_name,
+  last_name = '',
   phone: rawPhone,
   role = 'guest',
   sendWhatsApp = true,
@@ -19,6 +22,13 @@ export async function createInvitedUser({
   if (!['guest', 'staff', 'admin'].includes(role)) {
     throw Object.assign(new Error('Invalid role'), { status: 400 });
   }
+
+  const firstName = String(first_name ?? '').trim();
+  const lastName = String(last_name ?? '').trim();
+  if (!firstName) {
+    throw Object.assign(new Error('first_name is required'), { status: 400 });
+  }
+  const name = composeDisplayName(firstName, lastName);
 
   const phone = normalizeToE164(rawPhone);
   if (!phone || !/^\+\d{8,15}$/.test(phone)) {
@@ -55,6 +65,8 @@ export async function createInvitedUser({
     const { error: updateError } = await supabase
       .from('users')
       .update({
+        first_name: firstName,
+        last_name: lastName || null,
         name,
         role,
         status: 'active',
@@ -87,6 +99,8 @@ export async function createInvitedUser({
     userId = authUser.user.id;
     const row = {
       id: userId,
+      first_name: firstName,
+      last_name: lastName || null,
       name,
       phone,
       role,
