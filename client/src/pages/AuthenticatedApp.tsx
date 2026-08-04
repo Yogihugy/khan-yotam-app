@@ -3,6 +3,7 @@ import { Link, Navigate, Route, Routes, useSearchParams } from 'react-router-dom
 import { AppShell } from '../components/AppShell';
 import { useAuthState } from '../hooks/useAuthState';
 import { startDistressQueueWorker } from '../lib/distressSend';
+import { UnreadMessagesProvider } from '../lib/unreadMessages';
 import { writeCachedUser, hasCompletedOnboarding } from '../lib/userStore';
 import { ChatThreadPage } from './ChatThreadPage';
 import { ExpiredPage } from './ExpiredPage';
@@ -108,40 +109,42 @@ export function AuthenticatedApp() {
   const user = auth.user;
 
   return (
-    <Routes>
-      <Route path="admin" element={<AdminDashboardPage user={user} />} />
-      <Route element={<AppShell isAdmin={user.role === 'admin'} />}>
-        <Route index element={<MapPage user={user} />} />
-        <Route path="messages" element={<MessagesPage user={user} />} />
-        <Route path="messages/:peerId" element={<ChatThreadPage user={user} />} />
-        <Route
-          path="profile"
-          element={
-            <ProfilePage
-              user={user}
-              onUserChange={(next) => {
-                writeCachedUser(next);
-                void auth.refreshUser();
-              }}
-            />
-          }
-        />
-        <Route
-          path="status"
-          element={
-            <StatusPage
-              user={user}
-              onUserChange={(next) => {
-                writeCachedUser(next);
-                void auth.refreshUser();
-              }}
-              onDisconnect={() => auth.signOut()}
-            />
-          }
-        />
-        <Route path="help" element={<HelpPage />} />
-      </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <UnreadMessagesProvider selfId={user.id}>
+      <Routes>
+        <Route path="admin" element={<AdminDashboardPage user={user} />} />
+        <Route element={<AppShell isAdmin={user.role === 'admin'} />}>
+          <Route index element={<MapPage user={user} />} />
+          <Route path="messages" element={<MessagesPage user={user} />} />
+          <Route path="messages/:peerId" element={<ChatThreadPage user={user} />} />
+          <Route
+            path="profile"
+            element={
+              <ProfilePage
+                user={user}
+                onUserChange={(next) => {
+                  writeCachedUser(next);
+                  void auth.refreshUser();
+                }}
+              />
+            }
+          />
+          <Route
+            path="status"
+            element={
+              <StatusPage
+                user={user}
+                onUserChange={(next) => {
+                  writeCachedUser(next);
+                  void auth.refreshUser();
+                }}
+                onDisconnect={() => auth.signOut()}
+              />
+            }
+          />
+          <Route path="help" element={<HelpPage />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </UnreadMessagesProvider>
   );
 }

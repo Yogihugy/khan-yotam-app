@@ -21,6 +21,8 @@ export type ConversationPreview = {
   lastMessage: string;
   lastAt: string;
   threadId: string;
+  /** Latest message is addressed to self and still unread. */
+  unread: boolean;
 };
 
 type ChatPeerProfile = {
@@ -97,7 +99,7 @@ export async function fetchConversationPreviews(
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from('messages')
-    .select('id, thread_id, from_user_id, to_user_id, content, created_at')
+    .select('id, thread_id, from_user_id, to_user_id, content, created_at, read_at')
     .or(`from_user_id.eq.${selfId},to_user_id.eq.${selfId}`)
     .order('created_at', { ascending: false })
     .limit(300);
@@ -137,6 +139,7 @@ export async function fetchConversationPreviews(
       lastMessage: m.content,
       lastAt: m.created_at,
       threadId: m.thread_id,
+      unread: m.to_user_id === selfId && m.read_at == null,
     };
   });
 }

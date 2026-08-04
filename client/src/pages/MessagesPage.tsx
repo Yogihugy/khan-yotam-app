@@ -6,6 +6,7 @@ import {
 } from '../lib/mapData';
 import { fetchConversationPreviews, type ConversationPreview } from '../lib/chat';
 import type { PublicUser } from '../lib/api';
+import { useUnreadMessages } from '../lib/unreadMessages';
 
 type Props = {
   user: PublicUser;
@@ -13,6 +14,7 @@ type Props = {
 
 export function MessagesPage({ user }: Props) {
   const navigate = useNavigate();
+  const { unreadThreadIds, mergeUnreadFromPreviews } = useUnreadMessages();
   const [conversations, setConversations] = useState<ConversationPreview[]>([]);
   const [activeUsers, setActiveUsers] = useState<MapUserProfile[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -26,6 +28,7 @@ export function MessagesPage({ user }: Props) {
       ]);
       setConversations(convos);
       setActiveUsers(active.filter((u) => u.id !== user.id));
+      mergeUnreadFromPreviews(convos.filter((c) => c.unread).map((c) => c.threadId));
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'שגיאה בטעינת הודעות');
@@ -71,6 +74,9 @@ export function MessagesPage({ user }: Props) {
                       <strong>{c.peerName}</strong>
                       <span className="muted">{c.lastMessage}</span>
                     </span>
+                    {unreadThreadIds.has(c.threadId) && (
+                      <span className="convo-unread-dot" aria-label="הודעה שלא נקראה" />
+                    )}
                   </Link>
                 </li>
               ))}

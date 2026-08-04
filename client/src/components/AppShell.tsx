@@ -1,12 +1,15 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { EmergencyBanner } from './EmergencyBanner';
 import { OfflineBanner } from './OfflineBanner';
+import { useUnreadMessages } from '../lib/unreadMessages';
 
 type Props = {
   isAdmin?: boolean;
 };
 
 export function AppShell({ isAdmin }: Props) {
+  const { unreadCount } = useUnreadMessages();
+
   return (
     <div className="app-shell">
       <OfflineBanner />
@@ -23,6 +26,9 @@ export function AppShell({ isAdmin }: Props) {
           className={({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')}
         >
           הודעות
+          {unreadCount > 0 && (
+            <span className="nav-unread-dot" aria-label={`${unreadCount} הודעות שלא נקראו`} />
+          )}
         </NavLink>
         <NavLink
           to="/profile"

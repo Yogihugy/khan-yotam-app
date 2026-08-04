@@ -294,6 +294,7 @@ code {
 }
 
 .nav-item {
+  position: relative;
   border: 0;
   background: transparent;
   color: var(--muted);
@@ -307,6 +308,17 @@ code {
 .nav-item.active,
 .nav-item:hover {
   color: var(--sand);
+}
+
+.nav-unread-dot {
+  position: absolute;
+  top: 0.35rem;
+  inset-inline-end: 0.35rem;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: var(--accent-2);
+  pointer-events: none;
 }
 
 .shell-page {
@@ -732,6 +744,15 @@ code {
   height: 1.75rem;
   border-radius: 999px;
   flex-shrink: 0;
+}
+
+.convo-unread-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: var(--accent-2);
+  flex-shrink: 0;
+  margin-inline-start: auto;
 }
 
 .convo-body {

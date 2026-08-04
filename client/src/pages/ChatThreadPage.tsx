@@ -10,6 +10,7 @@ import {
 } from '../lib/chat';
 import { getSupabase } from '../lib/supabase';
 import type { PublicUser } from '../lib/api';
+import { useUnreadMessages } from '../lib/unreadMessages';
 
 type Props = {
   user: PublicUser;
@@ -17,6 +18,7 @@ type Props = {
 
 export function ChatThreadPage({ user }: Props) {
   const { peerId = '' } = useParams<{ peerId: string }>();
+  const { markThreadSeen } = useUnreadMessages();
   const [peerName, setPeerName] = useState('שיחה');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [text, setText] = useState('');
@@ -45,6 +47,7 @@ export function ChatThreadPage({ user }: Props) {
           setError(null);
         }
         await markThreadRead(threadId, user.id);
+        markThreadSeen(threadId);
       } catch (err) {
         if (!cancelled) {
           setError(err instanceof Error ? err.message : 'שגיאה בטעינת השיחה');
@@ -53,6 +56,7 @@ export function ChatThreadPage({ user }: Props) {
     }
 
     void load();
+    markThreadSeen(threadId);
 
     const supabase = getSupabase();
     const channel = supabase
@@ -73,6 +77,7 @@ export function ChatThreadPage({ user }: Props) {
           });
           if (row.to_user_id === user.id) {
             void markThreadRead(threadId, user.id);
+            markThreadSeen(threadId);
           }
         },
       )
@@ -82,7 +87,7 @@ export function ChatThreadPage({ user }: Props) {
       cancelled = true;
       void supabase.removeChannel(channel);
     };
-  }, [threadId, user.id]);
+  }, [threadId, user.id, markThreadSeen]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
