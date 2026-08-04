@@ -25,10 +25,12 @@ export function AppShell({ isAdmin }: Props) {
           to="/messages"
           className={({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')}
         >
-          הודעות
-          {unreadCount > 0 && (
-            <span className="nav-unread-dot" aria-label={`${unreadCount} הודעות שלא נקראו`} />
-          )}
+          <span className="nav-item-label">
+            הודעות
+            {unreadCount > 0 && (
+              <span className="nav-unread-dot" aria-label={`${unreadCount} הודעות שלא נקראו`} />
+            )}
+          </span>
         </NavLink>
         <NavLink
           to="/profile"

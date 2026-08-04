@@ -294,7 +294,6 @@ code {
 }
 
 .nav-item {
-  position: relative;
   border: 0;
   background: transparent;
   color: var(--muted);
@@ -310,10 +309,15 @@ code {
   color: var(--sand);
 }
 
+.nav-item-label {
+  position: relative;
+  display: inline-block;
+}
+
 .nav-unread-dot {
   position: absolute;
-  top: 0.35rem;
-  inset-inline-end: 0.35rem;
+  top: -0.15rem;
+  inset-inline-end: -0.45rem;
   width: 0.45rem;
   height: 0.45rem;
   border-radius: 999px;
