@@ -40,10 +40,10 @@ function poiIcon(poi: PoiRow) {
       <div class="poi-marker-badge">${iconSvg}</div>
       <div class="poi-marker-label">${escapeHtml(poi.name)}</div>
     </div>`,
-    // Wide enough for ~36px badge + side pill; anchor at badge center
-    iconSize: [148, 36],
-    iconAnchor: [18, 18],
-    popupAnchor: [0, -20],
+    // Wide enough for ~30px badge + side pill; anchor at badge center
+    iconSize: [148, 30],
+    iconAnchor: [15, 15],
+    popupAnchor: [0, -16],
   });
 }
 

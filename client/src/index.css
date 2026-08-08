@@ -698,8 +698,8 @@ code {
 
 .poi-marker-badge {
   flex: 0 0 auto;
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 1.875rem;
+  height: 1.875rem;
   border-radius: 0.5rem;
   overflow: hidden;
   opacity: 0.7;
