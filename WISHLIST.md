@@ -36,6 +36,8 @@ Informal list of future improvements and UX polish items. Not committed to a pha
 
 3. **Fresh-start user cleanup** — Delete all current users except Ouri's account for a clean slate before real onboarding/Twilio SMS goes live. Needs investigation first: FK constraints referencing users (chat messages, distress alerts, activity_log, banned_phones, presence/location tables) and ON DELETE behavior, relationship between public.users and Supabase auth.users/identities for phone-based OTP, and whether any current test phones are already in banned_phones. Deliberately deferred until ready — do not execute any SQL yet.
 
+4. **Alphanumeric SMS sender ID instead of phone number** — Currently OTP/distress SMS messages show Chan Yotam's raw Twilio phone number (+1 743 228 5129) as the sender, rather than a recognizable name. Twilio supports Alphanumeric Sender ID for Israel (+972), which would show a custom name instead of the number — but requires pre-registration with carrier approval (not instant), and the sender ID must be ASCII only (Latin letters/digits/spaces, max 11 characters) — Hebrew text like "שביל הים" is not supported, so it would need to be something like "ChanYotam" or "Khan Yotam" in English instead. One-way messaging only (no replies), which is fine for OTP/alerts. No extra Twilio fees beyond standard SMS rates. Worth revisiting once real users report confusion over the unrecognized sender number.
+
 ## Future / v3 (from Nir's feedback session, July 2026)
 
 See also: [SMS_SELFREG_BRIEF.md](./SMS_SELFREG_BRIEF.md) for the full scoping on SMS/self-registration.
