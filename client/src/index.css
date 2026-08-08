@@ -275,7 +275,7 @@ code {
 .emergency-banner {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
   padding: 0.5rem 0.75rem;
   background: rgba(192, 57, 43, 0.92);
   color: #fff;
@@ -305,19 +305,7 @@ code {
   border-radius: 999px;
 }
 
-.emergency-banner-sos-balance {
-  flex: 0 0 auto;
-  visibility: hidden;
-  font-weight: 800;
-  font-size: 0.72rem;
-  letter-spacing: 0.06em;
-  line-height: 1;
-  padding: 0.28rem 0.45rem;
-  pointer-events: none;
-}
-
 .emergency-banner-main {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;

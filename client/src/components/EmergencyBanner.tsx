@@ -52,13 +52,10 @@ export function EmergencyBanner({ className }: Props) {
       href={`tel:${phone}`}
       aria-label={`לחצו להתקשר לקצין תורן: ${phone}`}
     >
-      <span className="emergency-banner-sos">SOS</span>
       <span className="emergency-banner-main">
-        <PhoneIcon />
         <span>חירום - לחצו להתקשר</span>
-      </span>
-      <span className="emergency-banner-sos-balance" aria-hidden="true">
-        SOS
+        <PhoneIcon />
+        <span className="emergency-banner-sos">SOS</span>
       </span>
     </a>
   );
