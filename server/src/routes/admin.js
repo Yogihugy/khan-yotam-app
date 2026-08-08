@@ -17,7 +17,26 @@ adminRouter.use(requireAdmin);
 
 const PROTOCOL_ID = '00000000-0000-0000-0000-000000000002';
 const DUTY_ID = '00000000-0000-0000-0000-000000000001';
-const POI_TYPES = new Set(['khan', 'parking', 'water', 'warning', 'other']);
+const POI_TYPES = new Set([
+  'khan',
+  'guesthouse',
+  'water',
+  'parking',
+  'warning',
+  'viewpoint',
+  'shopping',
+  'cafe',
+  'art',
+  'cave',
+  'diving',
+  'beach',
+  'historic',
+  'picnic',
+  'hiking',
+  'gas',
+  'first_aid',
+  'other',
+]);
 
 // —— Users ——
 adminRouter.get('/users', async (req, res, next) => {

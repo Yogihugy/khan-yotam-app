@@ -84,7 +84,25 @@ export type PoiAdmin = {
   description: string | null;
   lat: number;
   lng: number;
-  type: 'khan' | 'parking' | 'water' | 'warning' | 'other';
+  type:
+    | 'khan'
+    | 'guesthouse'
+    | 'water'
+    | 'parking'
+    | 'warning'
+    | 'viewpoint'
+    | 'shopping'
+    | 'cafe'
+    | 'art'
+    | 'cave'
+    | 'diving'
+    | 'beach'
+    | 'historic'
+    | 'picnic'
+    | 'hiking'
+    | 'gas'
+    | 'first_aid'
+    | 'other';
   created_by: string | null;
   created_at: string;
 };

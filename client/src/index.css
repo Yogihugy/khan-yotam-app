@@ -656,34 +656,19 @@ code {
   width: max-content;
 }
 
-.poi-marker-dot {
+.poi-marker-badge {
   flex: 0 0 auto;
-  width: 1.875rem;
-  height: 1.875rem;
-  border-radius: 50%;
-  background: #6a9b7e;
-  opacity: 0.5;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
 }
 
-.poi-marker.poi-khan .poi-marker-dot {
-  background: #d4896a;
-}
-
-.poi-marker.poi-water .poi-marker-dot {
-  background: #5ba8c9;
-}
-
-.poi-marker.poi-parking .poi-marker-dot {
-  background: #7b8fa0;
-}
-
-.poi-marker.poi-warning .poi-marker-dot {
-  background: #e07a5f;
-}
-
-.poi-marker.poi-other .poi-marker-dot {
-  background: #6a9b7e;
+.poi-marker-badge svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .poi-marker-label {

@@ -4,15 +4,47 @@ import { adminApi, type PoiAdmin } from '../../lib/adminApi';
 import { notifyPoiChanged } from '../../lib/poiEvents';
 import type { PoiRow } from '../../lib/poi';
 
-const TYPES: PoiAdmin['type'][] = ['khan', 'parking', 'water', 'warning', 'other'];
+const TYPES: PoiAdmin['type'][] = [
+  'khan',
+  'guesthouse',
+  'water',
+  'parking',
+  'warning',
+  'viewpoint',
+  'shopping',
+  'cafe',
+  'art',
+  'cave',
+  'diving',
+  'beach',
+  'historic',
+  'picnic',
+  'hiking',
+  'gas',
+  'first_aid',
+  'other',
+];
 
 /** Display labels for POI types — DB values stay unchanged (e.g. 'khan'). */
 const TYPE_LABELS: Record<PoiAdmin['type'], string> = {
   khan: 'chan',
-  parking: 'parking',
-  water: 'water',
-  warning: 'warning',
-  other: 'other',
+  guesthouse: 'בית אירוח',
+  water: 'מים',
+  parking: 'חניה',
+  warning: 'אזהרה',
+  viewpoint: 'תצפית',
+  shopping: 'קניות',
+  cafe: 'בית קפה',
+  art: 'אמנות',
+  cave: 'מערה',
+  diving: 'צלילה',
+  beach: 'חוף',
+  historic: 'היסטורי',
+  picnic: 'פיקניק',
+  hiking: 'טיול/מסלול',
+  gas: 'תחנת דלק',
+  first_aid: 'עזרה ראשונה',
+  other: 'אחר',
 };
 
 const EMPTY_FORM = {
