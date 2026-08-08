@@ -649,48 +649,62 @@ code {
 }
 
 .poi-marker {
-  display: grid;
-  justify-items: center;
-  gap: 0.15rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.3rem;
+  width: max-content;
 }
 
 .poi-marker-dot {
-  width: 1.6rem;
-  height: 1.6rem;
-  border-radius: 0.34rem;
-  background: #1a5660;
+  flex: 0 0 auto;
+  width: 1.875rem;
+  height: 1.875rem;
+  border-radius: 50%;
+  background: #6a9b7e;
   color: #fff;
   display: grid;
   place-items: center;
   font-size: 0.72rem;
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  line-height: 1;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
 }
 
 .poi-marker.poi-khan .poi-marker-dot {
-  background: var(--accent-2);
+  background: #d4896a;
 }
 
 .poi-marker.poi-water .poi-marker-dot {
-  background: #2980b9;
+  background: #5ba8c9;
 }
 
 .poi-marker.poi-parking .poi-marker-dot {
-  background: #34495e;
+  background: #7b8fa0;
 }
 
 .poi-marker.poi-warning .poi-marker-dot {
-  background: #c0392b;
+  background: #e07a5f;
+}
+
+.poi-marker.poi-other .poi-marker-dot {
+  background: #6a9b7e;
 }
 
 .poi-marker-label {
-  background: rgba(12, 36, 48, 0.86);
-  padding: 0.1rem 0.35rem;
-  font-size: 0.6rem;
+  background: #ffffff;
+  color: #2c3a42;
+  border: 1px solid rgba(44, 58, 66, 0.12);
+  border-radius: 999px;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  line-height: 1.2;
   white-space: nowrap;
   max-width: 8rem;
   overflow: hidden;
   text-overflow: ellipsis;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
 }
 
 .map-popup-msg {

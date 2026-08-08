@@ -37,12 +37,13 @@ function poiIcon(poi: PoiRow) {
   return L.divIcon({
     className: 'poi-marker-wrap',
     html: `<div class="poi-marker poi-${poi.type}">
-      <div class="poi-marker-label">${escapeHtml(poi.name)}</div>
       <div class="poi-marker-dot">${symbol}</div>
+      <div class="poi-marker-label">${escapeHtml(poi.name)}</div>
     </div>`,
-    iconSize: [54, 42],
-    iconAnchor: [27, 36],
-    popupAnchor: [0, -30],
+    // Wide enough for circle + side pill; anchor at circle center
+    iconSize: [148, 30],
+    iconAnchor: [15, 15],
+    popupAnchor: [0, -16],
   });
 }
 
