@@ -662,12 +662,7 @@ code {
   height: 1.875rem;
   border-radius: 50%;
   background: #6a9b7e;
-  color: #fff;
-  display: grid;
-  place-items: center;
-  font-size: 0.72rem;
-  font-weight: 700;
-  line-height: 1;
+  opacity: 0.5;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
 }
 

@@ -4,7 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { appConfig } from '../lib/config';
 import { travelerLabel, type MapMarkerModel } from '../lib/mapData';
-import { poiSymbol, type PoiRow } from '../lib/poi';
+import { type PoiRow } from '../lib/poi';
 
 type Props = {
   markers: MapMarkerModel[];
@@ -33,11 +33,10 @@ function userIcon(marker: MapMarkerModel) {
 }
 
 function poiIcon(poi: PoiRow) {
-  const symbol = poiSymbol(poi.type);
   return L.divIcon({
     className: 'poi-marker-wrap',
     html: `<div class="poi-marker poi-${poi.type}">
-      <div class="poi-marker-dot">${symbol}</div>
+      <div class="poi-marker-dot" aria-hidden="true"></div>
       <div class="poi-marker-label">${escapeHtml(poi.name)}</div>
     </div>`,
     // Wide enough for circle + side pill; anchor at circle center
