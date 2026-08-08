@@ -38,6 +38,8 @@ Informal list of future improvements and UX polish items. Not committed to a pha
 
 4. **Alphanumeric SMS sender ID instead of phone number** — Currently OTP/distress SMS messages show Chan Yotam's raw Twilio phone number (+1 743 228 5129) as the sender, rather than a recognizable name. Twilio supports Alphanumeric Sender ID for Israel (+972), which would show a custom name instead of the number — but requires pre-registration with carrier approval (not instant), and the sender ID must be ASCII only (Latin letters/digits/spaces, max 11 characters) — Hebrew text like "שביל הים" is not supported, so it would need to be something like "ChanYotam" or "Khan Yotam" in English instead. One-way messaging only (no replies), which is fine for OTP/alerts. No extra Twilio fees beyond standard SMS rates. Worth revisiting once real users report confusion over the unrecognized sender number.
 
+5. **Misleading "whatsapp_*" naming in distress alert code/DB** — The distress alert flow sends SMS only (via sendSmsMessage), but the variable names, activity_log metadata keys (whatsapp_sent, whatsapp_results), and the distress_calls.whatsapp_sent DB column still use "whatsapp" naming — a leftover from before the WhatsApp-to-SMS migration. No functional bug (only one channel actually fires), but confusing when reading logs/DB later. Consider a rename pass (variables, metadata keys, and a migration to rename the DB column) once there's a natural opportunity — low priority, cosmetic/clarity only.
+
 ## Future / v3 (from Nir's feedback session, July 2026)
 
 See also: [SMS_SELFREG_BRIEF.md](./SMS_SELFREG_BRIEF.md) for the full scoping on SMS/self-registration.
