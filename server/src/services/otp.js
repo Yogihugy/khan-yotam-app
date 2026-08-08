@@ -40,7 +40,10 @@ function codesMatch(a, b) {
 }
 
 async function deleteOtpRow(supabase, phone) {
-  await supabase.from('otp_codes').delete().eq('phone', phone);
+  const { error } = await supabase.from('otp_codes').delete().eq('phone', phone);
+  if (error) {
+    console.error('[otp] failed to delete otp_codes row', { phone, error });
+  }
 }
 
 /**
@@ -120,10 +123,20 @@ export async function requestOtp(rawPhone) {
     throw Object.assign(new Error(upsertError.message), { status: 500 });
   }
 
-  await sendSmsMessage({
-    phone,
-    messageText: `קוד האימות שלך לחאן יותם: ${code}`,
-  });
+  try {
+    await sendSmsMessage({
+      phone,
+      messageText: `קוד האימות שלך לחאן יותם: ${code}`,
+    });
+  } catch (err) {
+    console.error('[otp] SMS send failed', err);
+    try {
+      await deleteOtpRow(supabase, phone);
+    } catch (cleanupErr) {
+      console.error('[otp] failed to roll back otp_codes after SMS failure', cleanupErr);
+    }
+    throw Object.assign(new Error('Failed to send verification code'), { status: 502 });
+  }
 
   return { ok: true };
 }

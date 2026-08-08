@@ -18,6 +18,9 @@ function hebrewAuthError(err: unknown): string {
   if (raw.includes('Too many code requests')) {
     return 'נשלחו יותר מדי קודים. נסו שוב מאוחר יותר';
   }
+  if (raw.includes('Failed to send verification code')) {
+    return 'לא הצלחנו לשלוח את הקוד. נסו שוב';
+  }
   if (raw.includes('Invalid or expired code')) return 'קוד שגוי או שפג תוקפו';
   return raw || 'אירעה שגיאה. נסו שוב';
 }
