@@ -16,6 +16,29 @@ type Props = {
   user: PublicUser;
 };
 
+function isSameLocalDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
+
+/** Time only for today; date + time for older messages (device-local calendar). */
+function formatMessageTimestamp(iso: string, now = new Date()): string {
+  const d = new Date(iso);
+  const time = d.toLocaleTimeString('he-IL', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+  if (isSameLocalDay(d, now)) return time;
+  const date = d.toLocaleDateString('he-IL', {
+    day: '2-digit',
+    month: '2-digit',
+  });
+  return `${date} ${time}`;
+}
+
 export function ChatThreadPage({ user }: Props) {
   const { peerId = '' } = useParams<{ peerId: string }>();
   const { markThreadSeen } = useUnreadMessages();
@@ -141,12 +164,7 @@ export function ChatThreadPage({ user }: Props) {
             return (
               <div key={m.id} className={mine ? 'bubble mine' : 'bubble theirs'}>
                 <p>{m.content}</p>
-                <time>
-                  {new Date(m.created_at).toLocaleTimeString('he-IL', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </time>
+                <time dateTime={m.created_at}>{formatMessageTimestamp(m.created_at)}</time>
               </div>
             );
           })}
