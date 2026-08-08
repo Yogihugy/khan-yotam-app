@@ -22,6 +22,7 @@ const TYPES: PoiAdmin['type'][] = [
   'hiking',
   'gas',
   'first_aid',
+  'maapilim',
   'other',
 ];
 
@@ -44,6 +45,7 @@ const TYPE_LABELS: Record<PoiAdmin['type'], string> = {
   hiking: 'טיול/מסלול',
   gas: 'תחנת דלק',
   first_aid: 'עזרה ראשונה',
+  maapilim: 'מחנה מעפילים',
   other: 'אחר',
 };
 

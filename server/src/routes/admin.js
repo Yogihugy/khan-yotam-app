@@ -35,6 +35,7 @@ const POI_TYPES = new Set([
   'hiking',
   'gas',
   'first_aid',
+  'maapilim',
   'other',
 ]);
 

@@ -102,6 +102,7 @@ export type PoiAdmin = {
     | 'hiking'
     | 'gas'
     | 'first_aid'
+    | 'maapilim'
     | 'other';
   created_by: string | null;
   created_at: string;

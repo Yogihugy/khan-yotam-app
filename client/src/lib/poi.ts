@@ -18,6 +18,7 @@ export type PoiType =
   | 'hiking'
   | 'gas'
   | 'first_aid'
+  | 'maapilim'
   | 'other';
 
 export type PoiRow = {
@@ -48,6 +49,7 @@ export const POI_ICONS: Record<PoiType, string> = {
   hiking: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100"><rect width="100" height="100" rx="22" fill="#5D3A1A"/><path d="M 20,62 C 20,56 24,52 32,52 H 42 L 50,62 H 68 C 72,62 76,66 76,70 C 76,74 72,76 68,76 H 24 C 20,76 20,70 20,62 Z" fill="#FFFFFF"/><path d="M 24,76 V 80 M 34,76 V 80 M 44,76 V 80 M 54,76 V 80 M 64,76 V 80" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/><path d="M 72,24 H 88 L 82,32 L 88,40 H 72 Z" fill="#FFFFFF"/><rect x="70" y="20" width="4" height="32" fill="#FFFFFF"/></svg>`,
   gas: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100"><rect width="100" height="100" rx="22" fill="#11698E"/><rect x="26" y="32" width="32" height="46" rx="4" fill="#FFFFFF"/><rect x="32" y="38" width="20" height="14" rx="2" fill="#11698E"/><path d="M 58,40 H 66 C 70,40 72,44 72,50 V 68 C 72,72 76,72 76,68 V 52 L 70,46" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><rect x="22" y="78" width="40" height="4" rx="2" fill="#FFFFFF"/></svg>`,
   first_aid: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100"><rect width="100" height="100" rx="22" fill="#C82323"/><path d="M 40,24 H 60 V 40 H 76 V 60 H 60 V 76 H 40 V 60 H 24 V 40 H 40 Z" fill="#FFFFFF"/></svg>`,
+  maapilim: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100"><rect width="100" height="100" rx="22" fill="#1E3A8A"/><path d="M 18,58 L 26,72 H 74 L 82,58 Z" fill="#FFFFFF"/><rect x="36" y="46" width="28" height="12" fill="#FFFFFF"/><rect x="42" y="38" width="16" height="8" fill="#FFFFFF"/><line x1="50" y1="20" x2="50" y2="38" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/><circle cx="34" cy="64" r="2.5" fill="#1E3A8A"/><circle cx="50" cy="64" r="2.5" fill="#1E3A8A"/><circle cx="66" cy="64" r="2.5" fill="#1E3A8A"/><path d="M 12,78 C 20,74 28,82 36,78 C 44,74 52,82 60,78 C 68,74 76,82 84,78" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/></svg>`,
   other: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100"><rect width="100" height="100" rx="22" fill="#6A9B7E"/><path d="M50,24 C38,24 30,32 30,44 C30,58 50,78 50,78 C50,78 70,58 70,44 C70,32 62,24 50,24 Z" fill="#FFFFFF"/><circle cx="50" cy="44" r="8" fill="#6A9B7E"/></svg>`,
 };
 
