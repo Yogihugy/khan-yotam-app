@@ -89,8 +89,8 @@ export function AdminUsersTab() {
     }
   }
 
-  async function onRemove(id: string) {
-    if (!window.confirm('להסיר משתמש זה?')) return;
+  async function onRemove(id: string, name: string) {
+    if (!window.confirm(`להסיר את ${name}?`)) return;
     try {
       await adminApi.removeUser(id);
       await refresh();
@@ -161,7 +161,7 @@ export function AdminUsersTab() {
         <button type="button" className="secondary" onClick={() => void onExtend(u.id)}>
           הארכה
         </button>
-        <button type="button" className="secondary" onClick={() => void onRemove(u.id)}>
+        <button type="button" className="secondary" onClick={() => void onRemove(u.id, u.name)}>
           הסרה
         </button>
         <button type="button" className="secondary" onClick={() => void onBan(u.id)}>
