@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { EmergencyBanner } from '../components/EmergencyBanner';
+import distressButtonImg from '../assets/help-distress-button.png';
 
 function goBackOrHome(navigate: ReturnType<typeof useNavigate>) {
   const idx = (window.history.state as { idx?: number } | null)?.idx;
@@ -25,23 +26,14 @@ export function HelpPage() {
             ← חזרה
           </button>
           <h1>מדריך שימוש</h1>
-          <p className="muted">איך להשתמש באפליקציית שביל הים של חאן יותם.</p>
+          <p className="muted">
+            סיור קצר על מה יש באפליקציית שביל הים של חאן יותם ומה אפשר לעשות בה.
+          </p>
         </header>
 
         <section className="help-section">
-          <h2>1. פתיחת ההזמנה</h2>
-          <p>
-            לוחצים על הקישור שקיבלתם בווטסאפ. הקישור בתוקף למשך 48 שעות בלבד — אם פג
-            תוקפו, פנו לחאן יותם לקבלת הזמנה חדשה.
-          </p>
-        </section>
-
-        <section className="help-section">
-          <h2>2. הוספה למסך הבית (מומלץ!)</h2>
-          <p>
-            כדי שהאפליקציה תעבוד הכי טוב (כולל שמירת החיבור שלכם), מומלץ להוסיף אותה
-            למסך הבית:
-          </p>
+          <h2>1. הוספה למסך הבית (מומלץ!)</h2>
+          <p>כדי שהאפליקציה תעבוד הכי טוב, מומלץ להוסיף אותה למסך הבית:</p>
           <ul className="onboarding-list">
             <li>
               <strong>iPhone (ספארי):</strong> לחצו על כפתור השיתוף (הריבוע עם החץ) ←
@@ -52,32 +44,48 @@ export function HelpPage() {
               למסך הבית&quot;
             </li>
           </ul>
-          <p>מכאן והלאה פתחו את האפליקציה מהאייקון במסך הבית, לא מהווטסאפ.</p>
+          <p>מכאן והלאה אפשר לפתוח את האפליקציה מהאייקון במסך הבית.</p>
         </section>
 
         <section className="help-section">
-          <h2>3. הרשאת מיקום</h2>
-          <p>
-            בפתיחה הראשונה תתבקשו לאשר גישה למיקום — חובה לאשר. בלי זה האפליקציה לא
-            יכולה להראות אתכם על המפה או לשלוח קריאת מצוקה עם המיקום שלכם. המיקום
-            משמש רק להצגה במפה ולחירום — לא נאסף למטרה אחרת.
-          </p>
-        </section>
-
-        <section className="help-section">
-          <h2>4. המפה</h2>
+          <h2>2. המפה</h2>
           <p>במסך הראשי תראו את המפה עם:</p>
           <ul className="onboarding-list">
             <li>האייקון שלכם — עם מסגרת בולטת</li>
             <li>משתמשים אחרים הפעילים כרגע בשביל</li>
-            <li>חאן יותם — מסומן באייקון בית</li>
+            <li>נקודות עניין לאורך השביל — מים, חניונים, אתרים ונקודות בטיחות, כל אחת עם אייקון משלה</li>
           </ul>
-          <p>לוחצים על אייקון של משתמש אחר לראות את השם שלו ולשלוח לו הודעה.</p>
+          <p>
+            לוחצים על אייקון של משתמש אחר לראות את הפרופיל שלו ולשלוח לו הודעה.
+            לוחצים על נקודת עניין לראות מידע עליה.
+          </p>
+        </section>
+
+        <section className="help-section">
+          <h2>3. פרופיל אישי</h2>
+          <p>
+            בעמוד הפרופיל אפשר לראות ולערוך את הפרטים שלכם — שם, כמה מילים עליכם,
+            קישור לרשת חברתית, סוג המטייל, וצבע הסימון שלכם על המפה.
+          </p>
+        </section>
+
+        <section className="help-section">
+          <h2>4. הודעות</h2>
+          <p>
+            לוחצים על אייקון המשתמש במפה ← &quot;שליחת הודעה&quot;, או נכנסים ל&quot;הודעות&quot;
+            בתפריט התחתון לראות שיחות פתוחות. כשיש הודעה חדשה שלא קראתם, תראו נקודת
+            התרעה — גם בתפריט וגם ליד השיחה עצמה — ותשמעו צליל קצר.
+          </p>
         </section>
 
         <section className="help-section help-section-emergency">
           <h2>5. כפתור מצוקה (חירום)</h2>
           <EmergencyBanner />
+          <img
+            src={distressButtonImg}
+            alt="כפתור הודעת מצוקה — עיגול אדום עם סמל יד מורמת"
+            style={{ display: 'block', margin: '12px auto', maxWidth: 120 }}
+          />
           <ul className="onboarding-list">
             <li>
               שורת החירום למעלה (&quot;חירום – לחצו להתקשר&quot;) = שיחת טלפון ישירה לחאן
@@ -93,23 +101,10 @@ export function HelpPage() {
               בולטת עם מספר החירום לחיוג ישיר.
             </li>
           </ul>
-          <div className="denied-box">
-            <p className="error">
-              חשוב: בסכנת חיים מיידית — התקשרו קודם, אל תסתמכו רק על הכפתור.
-            </p>
-          </div>
         </section>
 
         <section className="help-section">
-          <h2>6. שליחת הודעה למשתמש אחר</h2>
-          <p>
-            לוחצים על אייקון המשתמש במפה ← &quot;שליחת הודעה&quot;, או נכנסים ל&quot;הודעות&quot;
-            בתפריט התחתון לראות שיחות פתוחות.
-          </p>
-        </section>
-
-        <section className="help-section">
-          <h2>7. מצב שקט</h2>
+          <h2>6. מצב שקט</h2>
           <p>במסך סטטוס (בתפריט התחתון) אפשר לעבור למצב שקט:</p>
           <ul className="onboarding-list">
             <li>אתם לא מופיעים על המפה למשתמשים אחרים.</li>
@@ -120,7 +115,7 @@ export function HelpPage() {
         </section>
 
         <section className="help-section">
-          <h2>8. יציאה</h2>
+          <h2>7. יציאה</h2>
           <p>מסך סטטוס ← התנתקות.</p>
         </section>
 
