@@ -14,7 +14,7 @@ const TABS = [
   { id: 'distress', label: 'קריאות מצוקה' },
   { id: 'users', label: 'משתמשים' },
   { id: 'poi', label: 'נקודות עניין' },
-  { id: 'protocol', label: 'פרוטוקול' },
+  { id: 'protocol', label: 'נוהל חירום' },
   { id: 'duty', label: 'קצין תורן' },
   { id: 'activity', label: 'יומן' },
 ] as const;

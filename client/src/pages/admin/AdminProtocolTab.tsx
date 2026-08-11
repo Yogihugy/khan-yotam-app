@@ -27,7 +27,7 @@ export function AdminProtocolTab() {
 
   return (
     <div className="admin-tab">
-      <h2>פרוטוקול חירום</h2>
+      <h2>נוהל חירום</h2>
       <p className="muted">מוצג לקצין התורן בעת קריאת מצוקה (חמ"ל).</p>
       <form onSubmit={onSubmit} className="admin-stack">
         <textarea
