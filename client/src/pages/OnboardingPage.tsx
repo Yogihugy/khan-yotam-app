@@ -75,6 +75,10 @@ export function OnboardingPage() {
           </li>
         </ul>
 
+        <p className="muted">
+          המדריך המלא זמין בכל שלב דרך סימן ה־&quot;?&quot; שבמפה.
+        </p>
+
         <EmergencyBanner />
 
         {denied && <LocationDeniedHelp />}

@@ -198,19 +198,6 @@ legend {
   text-align: start;
 }
 
-.profile-help-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  text-decoration: none;
-  text-align: center;
-}
-
-.profile-help-icon {
-  flex-shrink: 0;
-}
-
 .help-panel {
   width: min(36rem, 100%);
   text-align: start;
