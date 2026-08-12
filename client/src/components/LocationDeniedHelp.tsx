@@ -15,10 +15,10 @@ function LocationHelpCopy({ kind }: { kind: LocationHelpBrowser }) {
       return (
         <>
           <p>
-            פתחו את הגדרות (Settings) באייפון ← Apps (אם קיים) ← Safari ← Settings for Websites ←
-            Location ← מצאו את האתר ובחרו Allow.
+            פתחו את ההגדרות (Settings) באייפון ← פרטיות ואבטחה (Privacy &amp; Security) ←
+            שירותי מיקום (Location Services) ← Safari websites ← בעת השימוש באפליקציה
+            (While Using the App).
           </p>
-          <p>אם לא רואים &quot;Apps&quot;: חפשו Safari ישירות בהגדרות.</p>
           <p>אחרי שאישרתם, חזרו לכאן ורעננו את הדף.</p>
         </>
       );
