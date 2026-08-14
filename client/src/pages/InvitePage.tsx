@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { EmergencyBanner } from '../components/EmergencyBanner';
 import { InAppBrowserBanner } from '../components/InAppBrowserBanner';
 import { verifyInvite, type PublicUser } from '../lib/api';
 import { continueAfterAuth } from '../lib/continueAfterAuth';
@@ -81,6 +82,7 @@ export function InvitePage() {
           <>
             <p className="error">{error}</p>
             <p className="muted">בקשו קישור הזמנה חדש מצוות חאן יותם.</p>
+            <EmergencyBanner />
           </>
         ) : (
           <p>מאמתים את ההזמנה…</p>
