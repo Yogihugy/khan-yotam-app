@@ -39,7 +39,12 @@ function GuestLanding() {
     <main className="page">
       <div className="panel">
         <h1>חאן יותם</h1>
-        <p className="muted">הכניסה היא בהזמנה בלבד. פתחו את הקישור שקיבלתם בוואטסאפ.</p>
+        <p className="muted">
+          פתחו את הקישור שקיבלתם, או הירשמו עם מספר הטלפון שלכם.
+        </p>
+        <Link to="/register" className="primary">
+          הרשמה / כניסה
+        </Link>
         {import.meta.env.DEV && (
           <p className="muted">
             לבדיקה מקומית: <code>/invite/&lt;token&gt;</code>
