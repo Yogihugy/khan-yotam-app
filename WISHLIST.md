@@ -40,6 +40,8 @@ Informal list of future improvements and UX polish items. Not committed to a pha
 
 5. **Misleading "whatsapp_*" naming in distress alert code/DB** — The distress alert flow sends SMS only (via sendSmsMessage), but the variable names, activity_log metadata keys (whatsapp_sent, whatsapp_results), and the distress_calls.whatsapp_sent DB column still use "whatsapp" naming — a leftover from before the WhatsApp-to-SMS migration. No functional bug (only one channel actually fires), but confusing when reading logs/DB later. Consider a rename pass (variables, metadata keys, and a migration to rename the DB column) once there's a natural opportunity — low priority, cosmetic/clarity only.
 
+6. **Misleading "invite_sent" activity log label** — When an admin creates an invite via the Users tab, the activity log immediately records an `invite_sent` event the moment the invite link is generated/copied — not when it's actually sent to the user. Since invite delivery is manual (admin copies the link and sends it separately via SMS/WhatsApp, unlike self-registration where sending is automatic), the log can show "invite_sent" for invites that were only created, not yet delivered. Consider a more accurate event name (e.g. `invite_created` or `invite_copied`) to avoid misreading the activity log later.
+
 ## Future / v3 (from Nir's feedback session, July 2026)
 
 See also: [SMS_SELFREG_BRIEF.md](./SMS_SELFREG_BRIEF.md) for the full scoping on SMS/self-registration.
