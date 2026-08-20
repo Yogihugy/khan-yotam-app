@@ -26,7 +26,7 @@ Informal list of future improvements and UX polish items. Not committed to a pha
 
 5. **Two paths for self-registration discovery** — (1) Drafted a brief and visual mockup for a new section/page on the Chan Yotam Wix site (yotamwaysideinn.org) linking to /register, same-tab, for self-service sign-up. Pending: confirming who has Wix edit access (via Nir), and coordinating who builds it. (2) Direct link — the /register URL can also be sent standalone (SMS, WhatsApp, etc.) without going through the Wix site at all, landing straight on the phone-entry screen. Both paths lead to the same flow. Neither should go live/be sent until real SMS (Twilio) is active — otherwise visitors hit a dead end waiting for a verification code that never arrives.
 
-6. **PWA update banner hard to notice** — The "יש עדכון חדש — לחצו לרענון" banner (added for fixing stale cached versions after deploys) is easy to miss/overlook in practice — real usage showed it wasn't visually prominent enough. Worth revisiting styling/placement to make it more noticeable.
+6. **PWA update banner unreliable, not just hard to notice** — The "יש עדכון חדש — לחצו לרענון" banner only appears after the browser detects a new service worker, which is only checked on tab visibility/focus change (not on a timer). A tab left open and focused since before a deploy — never backgrounded, switched away from, or reloaded — will not see the banner at all, not just miss it visually. This matters for admins/testers who keep the app open for long stretches. Consider adding a periodic update check (e.g. every few minutes) in addition to the existing visibility/focus triggers, so the tab doesn't rely solely on the user switching away and back.
 
 ## Admin / Configuration
 
