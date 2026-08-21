@@ -80,6 +80,13 @@ export function completeProfile(
   });
 }
 
+export function acceptConsent(accessToken: string) {
+  return apiFetch<{ ok: true }>('/auth/accept-consent', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+}
+
 export async function postDistress(payload: {
   client_request_id: string;
   lat: number | null;
