@@ -66,6 +66,7 @@ export function ProfilePage({ user, onUserChange }: Props) {
       writeCachedUser(updated);
       onUserChange(updated);
       setSaved(true);
+      setTimeout(() => setSaved(false), 1500);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'שגיאה בשמירה');
     } finally {
@@ -162,10 +163,9 @@ export function ProfilePage({ user, onUserChange }: Props) {
         </fieldset>
 
         {error && <p className="error">{error}</p>}
-        {saved && <p className="muted">נשמר.</p>}
 
         <button type="submit" className="primary" disabled={saving}>
-          {saving ? 'שומרים…' : 'שמירה'}
+          {saving ? 'שומרים…' : saved ? 'נשמר ✓' : 'שמירה'}
         </button>
       </form>
     </main>
