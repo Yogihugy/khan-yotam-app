@@ -5,6 +5,7 @@ import { AuthenticatedApp } from './pages/AuthenticatedApp';
 import { CompleteProfilePage } from './pages/CompleteProfilePage';
 import { InvitePage } from './pages/InvitePage';
 import { OnboardingPage } from './pages/OnboardingPage';
+import { PolicyPage } from './pages/PolicyPage';
 import { RegisterPage } from './pages/RegisterPage';
 
 assertClientEnv();
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/onboarding" element={<OnboardingPage />} />
         <Route path="/complete-profile" element={<CompleteProfilePage />} />
+        <Route path="/policy" element={<PolicyPage />} />
         <Route path="/*" element={<AuthenticatedApp />} />
       </Routes>
     </BrowserRouter>
