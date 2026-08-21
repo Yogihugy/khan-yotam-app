@@ -26,6 +26,7 @@ export function StatusPage({ user, onUserChange, onDisconnect }: Props) {
       writeCachedUser(updated);
       onUserChange(updated);
       setSaved(true);
+      setTimeout(() => setSaved(false), 1500);
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : 'לא הצלחנו לעדכן סטטוס');
