@@ -226,3 +226,59 @@ authRouter.post('/complete-profile', async (req, res, next) => {
     next(err);
   }
 });
+
+/**
+ * POST /auth/accept-consent
+ * Headers: Authorization: Bearer <access_token>
+ * Sets users.consent_accepted_at on first acceptance only (does not overwrite).
+ */
+authRouter.post('/accept-consent', async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization || '';
+    const accessToken = authHeader.startsWith('Bearer ')
+      ? authHeader.slice(7)
+      : null;
+    if (!accessToken) {
+      return res.status(401).json({ error: 'Missing Authorization Bearer token' });
+    }
+
+    const supabase = getSupabaseAdmin();
+    const { data: authData, error: authError } = await supabase.auth.getUser(accessToken);
+    if (authError || !authData?.user) {
+      return res.status(401).json({ error: 'Invalid session' });
+    }
+    const userId = authData.user.id;
+
+    const { data: existing, error: existingError } = await supabase
+      .from('users')
+      .select('id, consent_accepted_at')
+      .eq('id', userId)
+      .eq('is_deleted', false)
+      .maybeSingle();
+
+    if (existingError) return next(existingError);
+    if (!existing) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // IMPORTANT: only set on first acceptance — do not overwrite an
+    // existing timestamp. This preserves "when they first agreed" as the
+    // legal record.
+    //
+    // TODO: if/when the privacy policy text changes in the future, this
+    // logic needs revisiting — decide then whether a policy version bump
+    // should force re-consent (a new timestamp), rather than silently
+    // keeping the original acceptance date against updated terms.
+    if (!existing.consent_accepted_at) {
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({ consent_accepted_at: new Date().toISOString() })
+        .eq('id', userId);
+      if (updateError) return next(updateError);
+    }
+
+    return res.status(200).json({ ok: true });
+  } catch (err) {
+    next(err);
+  }
+});
