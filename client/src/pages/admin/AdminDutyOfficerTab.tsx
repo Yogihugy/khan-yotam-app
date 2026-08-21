@@ -7,6 +7,7 @@ export function AdminDutyOfficerTab() {
   const [backupName, setBackupName] = useState('');
   const [backupPhone, setBackupPhone] = useState('');
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -27,6 +28,7 @@ export function AdminDutyOfficerTab() {
     e.preventDefault();
     setSaved(false);
     setError(null);
+    setSaving(true);
     try {
       await adminApi.putDuty({
         name,
@@ -35,8 +37,11 @@ export function AdminDutyOfficerTab() {
         backup_phone: backupPhone || null,
       });
       setSaved(true);
+      setTimeout(() => setSaved(false), 1500);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'שמירה נכשלה');
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -63,12 +68,11 @@ export function AdminDutyOfficerTab() {
           גיבוי — טלפון
           <input value={backupPhone} onChange={(e) => setBackupPhone(e.target.value)} />
         </label>
-        <button type="submit" className="primary">
-          שמירה
+        <button type="submit" className="primary" disabled={saving}>
+          {saving ? 'שומרים…' : saved ? 'נשמר ✓' : 'שמירה'}
         </button>
       </form>
       {error && <p className="error">{error}</p>}
-      {saved && <p className="muted">נשמר.</p>}
     </div>
   );
 }
