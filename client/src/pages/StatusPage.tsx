@@ -82,7 +82,7 @@ export function StatusPage({ user, onUserChange, onDisconnect }: Props) {
         </button>
 
         {error && <p className="error">{error}</p>}
-        {saved && <p className="muted">עודכן.</p>}
+        {saved && <p className="status-updated">עודכן ✓</p>}
       </div>
     </main>
   );

@@ -987,6 +987,18 @@ code {
   border-color: rgba(192, 57, 43, 0.55);
 }
 
+.status-updated {
+  display: inline-block;
+  color: var(--accent);
+  background: rgba(42, 143, 123, 0.2);
+  border: 0.5px solid var(--accent);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin: 0;
+}
+
 .leaflet-container {
   font: inherit;
   background: #0a1c24;
