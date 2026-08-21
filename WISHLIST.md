@@ -42,6 +42,8 @@ Informal list of future improvements and UX polish items. Not committed to a pha
 
 6. **Misleading "invite_sent" activity log label** — When an admin creates an invite via the Users tab, the activity log immediately records an `invite_sent` event the moment the invite link is generated/copied — not when it's actually sent to the user. Since invite delivery is manual (admin copies the link and sends it separately via SMS/WhatsApp, unlike self-registration where sending is automatic), the log can show "invite_sent" for invites that were only created, not yet delivered. Consider a more accurate event name (e.g. `invite_created` or `invite_copied`) to avoid misreading the activity log later.
 
+7. **No in-app map in the distress tab — blocks related improvements** — AdminDistressTab shows a distress call's location only as an external Google Maps link (?q=lat,lng), not as a point on an in-app map. This is the root blocker for two other ideas already discussed: (1) showing the duty officer/admin which staff members are physically nearest to an open distress call, and (2) displaying the "נוהל חירום" (emergency protocol) content directly on this tab instead of requiring a separate tab visit. Both would benefit from embedding MapView (already used elsewhere in the app) into this tab instead of only linking out to Google Maps.
+
 ## Future / v3 (from Nir's feedback session, July 2026)
 
 See also: [SMS_SELFREG_BRIEF.md](./SMS_SELFREG_BRIEF.md) for the full scoping on SMS/self-registration.
