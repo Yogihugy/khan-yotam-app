@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { EmergencyBanner } from '../components/EmergencyBanner';
 import { InAppBrowserBanner } from '../components/InAppBrowserBanner';
 import { LocationDeniedHelp } from '../components/LocationDeniedHelp';
+import { acceptConsent } from '../lib/api';
 import { appConfig } from '../lib/config';
+import { getAccessToken } from '../lib/supabase';
 import {
   hasCompletedOnboarding,
   markOnboardingComplete,
@@ -21,6 +23,7 @@ export function OnboardingPage() {
     );
   });
   const [busy, setBusy] = useState(false);
+  const [consentChecked, setConsentChecked] = useState(false);
 
   if (hasCompletedOnboarding()) {
     const user = readCachedUser();
@@ -31,6 +34,20 @@ export function OnboardingPage() {
     setBusy(true);
     setError(null);
     setDenied(false);
+
+    const accessToken = await getAccessToken();
+    if (!accessToken) {
+      setError('אין סשן פעיל — נסו לפתוח את הקישור מחדש.');
+      setBusy(false);
+      return;
+    }
+    try {
+      await acceptConsent(accessToken);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'שגיאה בשמירת ההסכמה');
+      setBusy(false);
+      return;
+    }
 
     if (!navigator.geolocation) {
       setError('המכשיר לא תומך ב‑GPS. לא ניתן להמשיך בלי מיקום.');
@@ -79,13 +96,32 @@ export function OnboardingPage() {
           המדריך המלא זמין בכל שלב דרך סימן ה־&quot;?&quot; שבמפה.
         </p>
 
+        <label className="onboarding-consent">
+          <input
+            type="checkbox"
+            checked={consentChecked}
+            onChange={(e) => setConsentChecked(e.target.checked)}
+          />
+          {' '}קראתי, הבנתי ואני מאשר/ת כי מלאו לי 18 שנים, ואני מסכים/ה לשיתוף
+          המיקום ולתנאי{' '}
+          <Link to="/policy" target="_blank" rel="noopener noreferrer">
+            הפרטיות
+          </Link>
+          .
+        </label>
+
         <EmergencyBanner />
 
         {denied && <LocationDeniedHelp />}
 
         {error && <p className="error">{error}</p>}
 
-        <button type="button" className="primary" disabled={busy} onClick={() => void continueToApp()}>
+        <button
+          type="button"
+          className="primary"
+          disabled={busy || !consentChecked}
+          onClick={() => void continueToApp()}
+        >
           {busy ? 'מבקשים מיקום…' : denied ? 'ניסיון חוזר' : 'הבנתי, בואו נצא לדרך'}
         </button>
       </div>
