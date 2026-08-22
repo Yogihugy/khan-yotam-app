@@ -30,6 +30,7 @@ export function AdminUsersTab() {
   const [phone, setPhone] = useState('');
   const [role, setRole] = useState<'guest' | 'staff' | 'admin'>('guest');
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -211,8 +212,20 @@ export function AdminUsersTab() {
         </button>
       </form>
       {inviteUrl && (
-        <p className="muted">
+        <p className="muted invite-url-row">
           קישור הזמנה: <code>{inviteUrl}</code>
+          <button
+            type="button"
+            className="ghost-link"
+            onClick={() => {
+              void navigator.clipboard.writeText(inviteUrl).then(() => {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 1500);
+              });
+            }}
+          >
+            {copied ? 'הועתק ✓' : 'העתק'}
+          </button>
         </p>
       )}
 
