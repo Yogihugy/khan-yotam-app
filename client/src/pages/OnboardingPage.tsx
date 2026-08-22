@@ -102,12 +102,14 @@ export function OnboardingPage() {
             checked={consentChecked}
             onChange={(e) => setConsentChecked(e.target.checked)}
           />
-          {' '}קראתי, הבנתי ואני מאשר/ת כי מלאו לי 18 שנים, ואני מסכים/ה לשיתוף
-          המיקום ולתנאי{' '}
-          <Link to="/policy" target="_blank" rel="noopener noreferrer">
-            הפרטיות
-          </Link>
-          .
+          <span>
+            קראתי, הבנתי ואני מאשר/ת כי מלאו לי 18 שנים, ואני מסכים/ה לשיתוף
+            המיקום ולתנאי{' '}
+            <Link to="/policy" target="_blank" rel="noopener noreferrer">
+              הפרטיות
+            </Link>
+            .
+          </span>
         </label>
 
         <EmergencyBanner />
