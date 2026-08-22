@@ -112,6 +112,12 @@ export function OnboardingPage() {
           </span>
         </label>
 
+        {!consentChecked && (
+          <p className="muted" style={{ fontSize: '0.8rem', marginTop: '-0.5rem' }}>
+            * יש לאשר כדי להמשיך
+          </p>
+        )}
+
         <EmergencyBanner />
 
         {denied && <LocationDeniedHelp />}

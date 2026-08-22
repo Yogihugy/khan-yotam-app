@@ -914,9 +914,10 @@ code {
 }
 
 .onboarding-consent input[type="checkbox"] {
-  width: auto;
+  width: 1.25rem;
+  height: 1.25rem;
   flex-shrink: 0;
-  margin-top: 0.2rem;
+  margin-top: 0.1rem;
   accent-color: var(--accent);
 }
 
